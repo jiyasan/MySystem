@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="ja" xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>管理画面ログイン</title>
+<link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+<link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+	<div class="text-center mt-4">
+
+<h1>管理画面ログイン</h1>
+
+	<form class="mt-4" action="" method="post" th:object="${admin}">
+		<span th:errors="*{loginId}" class="error"></span>
+		<p class="mt-2"><input type="text" th:field="*{loginId}" placeholder="ログインIDを入力してください"></p>
+		<p><input type="password" th:field="*{loginPass}" placeholder="パスワードを入力してください"></p>
+		<input class="btn btn-primary" type="submit" value="ログイン">
+	</form>
+</div>
+</html>
+</body>
+</html>
