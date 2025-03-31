@@ -1,23 +1,36 @@
 <!DOCTYPE html>
-<html lang="ja">
+<html lang="ja" xmlns:th="http://www.thymeleaf.org">
 <head>
-<meta charset="UTF-8">
-<title>管理画面ログイン</title>
-<link rel="stylesheet" href="../../static/css/bootstrap.min.css">
-<link rel="stylesheet" href="../../static/css/admin_style.css">
+	<meta charset="UTF-8">
+	<title>管理画面ログイン</title>
+	<link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+	<link rel="stylesheet" th:href="@{/css/admin_style.css}">
 </head>
 <body>
 	<div class="text-center mt-4">
+		<h1>管理画面ログイン</h1>
 
-<h1>管理画面ログイン</h1>
+		<!-- エラーメッセージ表示（全体） -->
+		<div th:if="${errorMessage}" class="text-danger mt-2">
+			<p th:text="${errorMessage}"></p>
+		</div>
 
-	<form class="mt-4" action="" method="post" th:object="${admin}">
-		<span th:errors="*{loginId}" class="error"></span>
-		<p class="mt-2"><input type="text" th:field="*{loginId}" placeholder="ログインIDを入力してください"></p>
-		<p><input type="password" th:field="*{loginPass}" placeholder="パスワードを入力してください"></p>
-		<input class="btn btn-primary" type="submit" value="ログイン">
-	</form>
-</div>
-</html>
+		<form class="mt-4" th:action="@{/login}" method="post" th:object="${loginForm}">
+			<!-- ID -->
+			<div class="form-group">
+				<input type="text" th:field="*{loginId}" placeholder="ログインIDを入力してください" class="form-control">
+				<span th:errors="*{loginId}" class="text-danger small"></span>
+			</div>
+
+			<!-- パスワード -->
+			<div class="form-group">
+				<input type="password" th:field="*{loginPass}" placeholder="パスワードを入力してください" class="form-control">
+				<span th:errors="*{loginPass}" class="text-danger small"></span>
+			</div>
+
+			<!-- ボタン -->
+			<button type="submit" class="btn btn-primary mt-2">ログイン</button>
+		</form>
+	</div>
 </body>
 </html>
