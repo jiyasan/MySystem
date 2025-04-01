@@ -8,6 +8,7 @@ import com.example.app.entity.Employee;
 @Mapper
 public interface EmployeeMapper {
 
-    @Select("SELECT * FROM employees WHERE login_id = #{loginId}")
-    Employee findByLoginId(String loginId);
+	@Select("SELECT * FROM employees WHERE login_id = #{loginId}")
+	Employee findByLoginId(String loginId);
+
 }

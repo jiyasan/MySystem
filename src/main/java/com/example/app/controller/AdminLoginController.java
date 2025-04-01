@@ -14,18 +14,18 @@ import com.example.app.service.EmployeeService;
 import jakarta.servlet.http.HttpSession;
 
 @Controller
-public class LoginController {
+public class AdminLoginController {
 
 	@Autowired
 	private EmployeeService employeeService;
 
-    @GetMapping("/login")
+    @GetMapping("/admin/login")
     public String showLoginForm(Model model) {
         model.addAttribute("loginForm", new LoginForm());
-        return "admin/login";
+        return "/admin/login";
     }
 
-    @PostMapping("/login")
+    @PostMapping("/admin/login")
     public String login(@ModelAttribute LoginForm form, Model model, HttpSession session) {
         Employee loginUser = employeeService.authenticate(form.getLoginId(), form.getLoginPass());
 
@@ -40,10 +40,10 @@ public class LoginController {
 
         if (pos == 3) {
 		    // パートタイマー：業務用ダッシュボードのみ
-		    return "redirect:/" + loginUser.getShopId() + "_dashboard";
+		    return "redirect:/admin/" + loginUser.getShopId() + "_dashboard";
 		} else {
 		    // 管理者または店舗配属：本部 or 店舗どちらでも操作可能
-            return "redirect:/dashboard";
+            return "redirect:/admin/dashboard";
         }
     }
 }

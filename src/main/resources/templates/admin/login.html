@@ -1,21 +1,24 @@
 <!DOCTYPE html>
 <html lang="ja" xmlns:th="http://www.thymeleaf.org">
+
 <head>
 	<meta charset="UTF-8">
 	<title>管理画面ログイン</title>
 	<link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
 	<link rel="stylesheet" th:href="@{/css/admin_style.css}">
 </head>
+
 <body>
 	<div class="text-center mt-4">
 		<h1>管理画面ログイン</h1>
 
 		<!-- エラーメッセージ表示（全体） -->
-		<div th:if="${errorMessage}" class="text-danger mt-2">
-			<p th:text="${errorMessage}"></p>
+		<div th:if="${loginError}" class="text-danger mt-2">
+			<p th:text="${loginError}"></p>
 		</div>
 
-		<form class="mt-4" th:action="@{/login}" method="post" th:object="${loginForm}">
+
+		<form th:action="@{/admin/login}" method="post" th:object="${loginForm}">
 			<!-- ID -->
 			<div class="form-group">
 				<input type="text" th:field="*{loginId}" placeholder="ログインIDを入力してください" class="form-control">
@@ -33,4 +36,5 @@
 		</form>
 	</div>
 </body>
+
 </html>

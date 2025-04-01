@@ -10,22 +10,18 @@ import com.example.app.service.EmployeeService;
 @Service
 public class EmployeeServiceImpl implements EmployeeService {
 
-    @Autowired
-    private EmployeeMapper employeeMapper;
+	@Autowired
+	private EmployeeMapper employeeMapper;
 
-    @Override
-    public Employee authenticate(String loginId, String loginPass) {
-        Employee employee = employeeMapper.findByLoginId(loginId);
+	@Override
+	public Employee authenticate(String loginId, String pass) {
+		Employee employee = employeeMapper.findByLoginId(loginId);
 
-        if (employee == null) {
-            return null;
-        }
+		// nullチェックを追加して安全に比較！
+		if (employee != null && employee.getPassword() != null && employee.getPassword().equals(pass)) {
+			return employee;
+		}
+		return null;
+	}
 
-        // パスワード照合（例：プレーン or ハッシュ）
-        if (employee.getLoginPass().equals(loginPass)) {
-            return employee;
-        } else {
-            return null;
-        }
-    }
 }

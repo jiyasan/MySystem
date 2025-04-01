@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.example.app.mapper.ShopMapper">
+
+	<!-- 店舗一覧を取得 -->
+	<select id="findAll" resultType="Shop">
+		SELECT * FROM shops
+		ORDER BY shop_id ASC
+	</select>
+
+	<!-- 店舗名の重複チェック -->
+	<select id="countByShopName" parameterType="String"
+		resultType="int">
+		SELECT COUNT(*) FROM shops WHERE shop_name = #{shopName}
+	</select>
+
+	<!-- 店舗を新規登録 -->
+	<insert id="insertShop"
+		parameterType="com.example.app.entity.Shop">
+		INSERT INTO shops (
+		shop_name
+		) VALUES (
+		#{shopName}
+		)
+	</insert>
+
+</mapper>
