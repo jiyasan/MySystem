@@ -1,9 +1,15 @@
 package com.example.app.controller.admin;
 
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+
+import com.example.app.entity.Shop;
+import com.example.app.service.ShopService;
 
 import jakarta.servlet.http.HttpSession;
 
@@ -11,8 +17,11 @@ import jakarta.servlet.http.HttpSession;
 @RequestMapping("/admin/dashboard")
 public class AdminDashboardController {
 
+    @Autowired
+    private ShopService shopService;
+    
     // ダッシュボードTOP
-    @GetMapping
+    @GetMapping("") // ← 確認のために明記
     public String showDashboard() {
         return "admin/dashboard/index";
     }
@@ -20,7 +29,8 @@ public class AdminDashboardController {
     // 店舗一覧
     @GetMapping("/shop_list")
     public String showShopList(Model model) {
-        // shopService で一覧取得
+        List<Shop> shopList = shopService.findAll();
+        model.addAttribute("shopList", shopList);
         return "admin/dashboard/shop_list";
     }
 

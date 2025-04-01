@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ja">
+
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<title>店舗詳細</title>
+	<link rel="stylesheet" th:href="@{/css/bootstrap.min.css}" />
+</head>
+
+<body>
+	<div class="container mt-4">
+		<h1 class="mb-4">店舗詳細</h1>
+
+		<table class="table table-bordered">
+			<tbody>
+				<tr>
+					<th>店舗ID</th>
+					<td th:text="${shop.shopId}"></td>
+				</tr>
+				<tr>
+					<th>店舗名</th>
+					<td th:text="${shop.shopName}"></td>
+				</tr>
+				<tr>
+					<th>住所</th>
+					<td th:text="${shop.address}"></td>
+				</tr>
+				<tr>
+					<th>電話番号</th>
+					<td th:text="${shop.phone}"></td>
+				</tr>
+				<tr>
+					<th>営業時間</th>
+					<td th:text="${shop.businessHours}"></td>
+				</tr>
+				<tr>
+					<th>定休日</th>
+					<td th:text="${shop.holidays}"></td>
+				</tr>
+				<tr>
+					<th>メッセージ</th>
+					<td th:text="${shop.message}"></td>
+				</tr>
+				<tr>
+					<th>地図リンク</th>
+					<td>
+						<a th:href="${shop.mapUrl}" target="_blank">地図を開く</a>
+					</td>
+				</tr>
+				<tr>
+					<th>ロゴ画像</th>
+					<td>
+						<img th:src="@{${shop.logoImage}}" alt="ロゴ画像" style="max-height: 100px;" />
+					</td>
+				</tr>
+			</tbody>
+		</table>
+
+		<div class="mt-4">
+			<a th:href="@{/shop_edit/{id}(id=${shop.shopId})}" class="btn btn-primary">編集</a>
+			<a th:href="@{/shop_list}" class="btn btn-secondary">戻る</a>
+		</div>
+	</div>
+
+	<script th:src="@{/js/bootstrap.bundle.min.js}"></script>
+</body>
+
+</html>

@@ -8,11 +8,15 @@ import com.example.app.entity.Shop;
 
 @Mapper
 public interface ShopMapper {
-	
-    List<Shop> findAll();
 
-    int countByShopName(String shopName);
+	List<Shop> findAll();
 
-    int insertShop(Shop shop);
+	Shop findById(int shopId);
+
+	int countByShopName(String shopName);
+
+	int insertShop(Shop shop);
+
+	void updateShop(Shop shop);
 
 }

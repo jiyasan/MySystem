@@ -8,14 +8,23 @@
 	<!-- 店舗一覧を取得 -->
 	<select id="findAll" resultType="Shop">
 		SELECT * FROM shops
-		ORDER BY shop_id ASC
+		ORDER BY
+		shop_id ASC
 	</select>
+
+	<!-- 店舗を取得 -->
+	<select id="findById" resultType="Shop" parameterType="int">
+		SELECT *
+		FROM shops WHERE shop_id = #{shopId}
+	</select>
+
 
 	<!-- 店舗名の重複チェック -->
 	<select id="countByShopName" parameterType="String"
 		resultType="int">
 		SELECT COUNT(*) FROM shops WHERE shop_name = #{shopName}
 	</select>
+
 
 	<!-- 店舗を新規登録 -->
 	<insert id="insertShop"
@@ -27,4 +36,22 @@
 		)
 	</insert>
 
+	<!-- 店舗情報を更新 -->
+	<update id="updateShop" parameterType="Shop">
+		UPDATE shops
+		SET
+		shop_name =
+		#{shopName},
+		address = #{address},
+		phone = #{phone},
+		business_hours =
+		#{businessHours},
+		holidays = #{holidays},
+		message = #{message},
+		map_url =
+		#{mapUrl},
+		logo_image = #{logoImage}
+		WHERE shop_id = #{shopId}
+	</update>
+	
 </mapper>

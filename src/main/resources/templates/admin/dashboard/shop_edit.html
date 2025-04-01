@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ja">
+
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<title>店舗編集</title>
+	<link rel="stylesheet" th:href="@{/css/bootstrap.min.css}" />
+</head>
+
+<body>
+	<div class="container mt-4">
+		<h1 class="mb-4">店舗情報の編集</h1>
+
+		<form th:action="@{'/admin/dashboard/shop_edit/' + ${shop.shopId}}" method="post">
+			<table class="table table-bordered">
+				<tbody>
+					<tr>
+						<th>店舗ID</th>
+						<td>
+							<input type="text" class="form-control-plaintext" th:value="${shop.shopId}" readonly />
+						</td>
+					</tr>
+					<tr>
+						<th>店舗名</th>
+						<td>
+							<input type="text" class="form-control" name="shopName" th:value="${shop.shopName}"
+								required />
+						</td>
+					</tr>
+					<tr>
+						<th>住所</th>
+						<td>
+							<input type="text" class="form-control" name="address" th:value="${shop.address}" />
+						</td>
+					</tr>
+					<tr>
+						<th>電話番号</th>
+						<td>
+							<input type="text" class="form-control" name="phone" th:value="${shop.phone}" />
+						</td>
+					</tr>
+					<tr>
+						<th>営業時間</th>
+						<td>
+							<input type="text" class="form-control" name="businessHours"
+								th:value="${shop.businessHours}" />
+						</td>
+					</tr>
+					<tr>
+						<th>定休日</th>
+						<td>
+							<input type="text" class="form-control" name="holidays" th:value="${shop.holidays}" />
+						</td>
+					</tr>
+					<tr>
+						<th>メッセージ</th>
+						<td>
+							<textarea class="form-control" name="message" rows="3" th:text="${shop.message}"></textarea>
+						</td>
+					</tr>
+					<tr>
+						<th>地図リンク</th>
+						<td>
+							<input type="url" class="form-control" name="mapUrl" th:value="${shop.mapUrl}" />
+						</td>
+					</tr>
+					<!-- ...既存のform前半は省略... -->
+
+					<tr>
+						<th>ロゴ画像アップロード</th>
+						<td>
+							<form th:action="@{'/admin/dashboard/upload_logo/' + ${shop.shopId}}" method="post"
+								enctype="multipart/form-data">
+								<div class="input-group">
+									<input type="file" class="form-control" name="file" accept="image/*" required />
+									<button type="submit" class="btn btn-outline-primary">追加</button>
+								</div>
+							</form>
+						</td>
+					</tr>
+					<tr>
+						<th>ロゴ画像一覧</th>
+						<td>
+							<div class="d-flex flex-wrap gap-2 logo-gallery">
+								<div th:each="logo : ${logoList}"
+									th:class="'border p-1 ' + (${logo.isCurrent} ? 'border-primary border-3' : 'border-secondary')">
+									<img th:src="@{/uploads/logos/{shopId}/{filename}(shopId=${shop.shopId}, filename=${logo.filename})}"
+										alt="ロゴ画像" style="max-height: 80px;" />
+									<div th:if="!${logo.isCurrent}">
+										<form th:action="@{'/admin/dashboard/select_logo/' + ${logo.logoId}}"
+											method="post">
+											<button class="btn btn-sm btn-outline-secondary mt-1">このロゴを使用</button>
+										</form>
+									</div>
+								</div>
+							</div>
+						</td>
+					</tr>
+
+					<!-- ...form末尾の保存/キャンセルボタンへ続く... -->
+
+				</tbody>
+			</table>
+
+			<div class="mt-4">
+				<button type="submit" class="btn btn-primary">保存</button>
+				<a th:href="@{/admin/dashboard/shop_detail/{id}(id=${shop.shopId})}" class="btn btn-secondary">キャンセル</a>
+			</div>
+		</form>
+	</div>
+
+	<script th:src="@{/js/bootstrap.bundle.min.js}"></script>
+</body>
+
+</html>

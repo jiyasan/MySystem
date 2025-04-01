@@ -12,33 +12,45 @@ import com.example.app.service.ShopService;
 @Service
 public class ShopServiceImpl implements ShopService {
 
-    @Autowired
-    private ShopMapper shopMapper;
+	@Autowired
+	private ShopMapper shopMapper;
 
-    @Override
-    public List<Shop> findAll() {
-        return shopMapper.findAll(); // mapperに任せる
-    }
+	@Override
+	public List<Shop> findAll() {
+		return shopMapper.findAll(); // mapperに任せる
+	}
 
-    @Override
-    public boolean isShopNameDuplicate(String shopName) {
-        return shopMapper.countByShopName(shopName) > 0;
-    }
+	@Override
+	public Shop findById(int shopId) {
+		return shopMapper.findById(shopId);
+	}
 
-    @Override
-    public void addShop(String shopName) {
-        Shop shop = new Shop();
-        shop.setShopName(shopName);
-        shopMapper.insertShop(shop);
-    }
+	@Override
+	public boolean isShopNameDuplicate(String shopName) {
+		return shopMapper.countByShopName(shopName) > 0;
+	}
 
-    @Override
-    public int countByShopName(String shopName) {
-        return shopMapper.countByShopName(shopName); // ← 追加
-    }
+	@Override
+	public void addShop(String shopName) {
+		Shop shop = new Shop();
+		shop.setShopName(shopName);
+		shopMapper.insertShop(shop);
+	}
 
-    @Override
-    public void insertShop(Shop shop) {
-        shopMapper.insertShop(shop); // ← 追加
-    }
+	@Override
+	public int countByShopName(String shopName) {
+		return shopMapper.countByShopName(shopName); // ← 追加
+	}
+
+	@Override
+	public void insertShop(Shop shop) {
+		shopMapper.insertShop(shop); // ← 追加
+	}
+
+	@Override
+	public void updateShop(Shop shop) {
+	    shopMapper.updateShop(shop);
+	}
+
+	
 }
