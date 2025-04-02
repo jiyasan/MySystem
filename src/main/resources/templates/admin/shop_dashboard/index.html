@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ja">
+
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<title th:text="${shop.shopName} + ' 管理画面ダッシュボード'">管理画面ダッシュボード</title>
+	<link rel="stylesheet" th:href="@{/css/bootstrap.min.css}" />
+	<link rel="stylesheet" th:href="@{/css/admin/style.css}">
+	<style>
+
+	</style>
+</head>
+
+<body>
+	<div class="container mt-1 position-relative">
+		
+		<div th:if="${loginUser}" class="d-flex justify-content-end align-items-center mb-2 gap-3">
+			<span th:text="${loginUser.staffName} + ' さんでログイン中'" class="text-muted small"></span>
+			<a th:href="@{/admin/logout}" class="btn btn-outline-secondary btn-sm">ログアウト</a>
+		</div>
+
+		<!-- タイトル -->
+		<h2 class="text-center mb-4" th:text="${shop.shopName} + ' 管理画面ダッシュボード'">店舗名 管理画面ダッシュボード</h2>
+
+		<!-- ダッシュボードのメインボタン群 -->
+		<div class="row text-center">
+			<div class="col-4 mb-3">
+				<a th:href="@{'/workstation?shopId=' + ${shop.shopId} + '&view=table/list'}"
+					class="btn btn-primary w-100 dashboard-button">テーブル一覧</a>
+			</div>
+			<div class="col-4 mb-3">
+				<a th:href="@{'/workstation?shopId=' + ${shop.shopId} + '&view=menu/list'}"
+					class="btn btn-primary w-100 dashboard-button">メニュー一覧</a>
+			</div>
+			<div class="col-4 mb-3">
+				<a th:href="@{'/workstation?shopId=' + ${shop.shopId} + '&view=order/list'}"
+					class="btn btn-primary w-100 dashboard-button">オーダー一覧</a>
+			</div>
+			<div class="col-4 mb-3">
+				<a th:href="@{'/admin/shift_management?shopId=' + ${shop.shopId}}"
+					class="btn btn-success w-100 dashboard-button">シフト管理</a>
+			</div>
+			<div class="col-4 mb-3">
+				<a th:href="@{'/admin/employees?shopId=' + ${shop.shopId}}"
+					class="btn btn-success w-100 dashboard-button">スタッフ一覧</a>
+			</div>
+			<div class="col-4 mb-3">
+				<a th:href="@{'/admin/messages?shopId=' + ${shop.shopId}}"
+					class="btn btn-warning w-100 dashboard-button">メッセージ管理</a>
+			</div>
+		</div>
+
+	</div>
+
+	<script th:src="@{/js/bootstrap.bundle.min.js}"></script>
+</body>
+
+</html>

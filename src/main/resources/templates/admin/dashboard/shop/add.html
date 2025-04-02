@@ -16,7 +16,7 @@
 		<div th:if="${successMessage}" class="text-success" th:text="${successMessage}"></div>
 
 		<!-- 登録フォーム -->
-		<form th:action="@{/dashboard/shop_add}" method="post" class="form-inline">
+		<form th:action="@{/admin/dashboard/shop/add}" method="post" class="form-inline">
 			<div class="form-group mr-2">
 				<input type="text" name="shopName" class="form-control" placeholder="店舗名を入力" required>
 			</div>
@@ -24,7 +24,7 @@
 		</form>
 
 		<div class="mt-3">
-			<a class="btn btn-secondary" th:href="@{admin/dashboard/shop_list}">戻る</a>
+			<a class="btn btn-secondary" th:href="@{admin/dashboard/shop/list}">戻る</a>
 		</div>
 	</div>
 </body>

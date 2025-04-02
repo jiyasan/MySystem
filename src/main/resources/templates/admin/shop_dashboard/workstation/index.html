@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="ja" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+	<meta charset="UTF-8">
+	<title>ワークステーション</title>
+	<link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+	<link rel="stylesheet" th:href="@{/css/admin/style.css}">
+	<script th:src="@{/js/clock.js}" defer></script>
+</head>
+
+<body>
+
+	<div class="container mt-4">
+
+		<!-- ⏰ 時計＋🔙 戻る -->
+		<div class="d-flex justify-content-between align-items-center mb-3">
+			<div id="clock" class="fs-5 text-muted">--:--</div>
+			<a th:href="@{'/admin/' + ${shop.shopId} + '_dashboard'}" class="btn btn-outline-secondary btn-sm">← 戻る</a>
+		</div>
+
+		<!-- 💬 メッセージ -->
+		<div th:if="${message}" class="alert alert-info text-center small fw-bold" th:text="${message}"></div>
+
+		<!-- 🔐 セッション切れ時だけログイン導線を表示 -->
+		<div th:if="${sessionExpired}" class="text-center mt-2">
+			<a th:href="@{/admin/login}" class="btn btn-sm btn-danger">ログイン画面へ</a>
+		</div>
+
+
+		<!-- タブ切り替えボタン -->
+		<div class="tab-container mb-3">
+			<button class="dashboard-tab-button" onclick="loadTabView('table_list')">テーブル一覧</button>
+			<button class="dashboard-tab-button" onclick="loadTabView('menu_list')">メニュー一覧</button>
+			<button class="dashboard-tab-button" onclick="loadTabView('order_list')">オーダー一覧</button>
+		</div>
+
+		<!-- 📄 表示エリア（動的読み込み先） -->
+		<div id="tab-content-area" class="border rounded p-3 bg-light">
+			<p class="text-muted small">読み込み中…</p>
+		</div>
+
+
+		<!-- 🔁 タブ切り替えボタン 
+		<div class="tab-container">
+			<a th:href="@{'/workstation?shopId=' + ${shop.shopId} + '&view=table/list'}" class="dashboard-tab-button"
+				th:classappend="${view} == 'table/list' ? ' active'">テーブル一覧</a>
+
+			<a th:href="@{'/workstation?shopId=' + ${shop.shopId} + '&view=menu/list'}" class="dashboard-tab-button"
+				th:classappend="${view} == 'menu/list' ? ' active'">メニュー一覧</a>
+
+			<a th:href="@{'/workstation?shopId=' + ${shop.shopId} + '&view=order/list'}" class="dashboard-tab-button"
+				th:classappend="${view} == 'order/list' ? ' active'">オーダー一覧</a>
+		</div>
+
+
+		<!-- 📄 表示エリア 
+		<div th:if="${sessionExpired} == null" th:replace="'workstation/' + ${view} + ' :: content'">
+			<!-- 中身はセッション有効なときだけ 
+		</div -->
+
+
+	</div>
+<script>
+  const shopId = /*[[${shop.shopId}]]*/ 1; // Thymeleafから埋め込む or 仮数値でテストOK
+
+  function loadTabView(viewName) {
+    const url = `/workstation/${viewName}?shopId=${shopId}`;
+
+    fetch(url)
+      .then(res => {
+        if (!res.ok) throw new Error("読み込み失敗");
+        return res.text();
+      })
+      .then(html => {
+        document.getElementById('tab-content-area').innerHTML = html;
+      })
+      .catch(err => {
+        document.getElementById('tab-content-area').innerHTML = `<div class="text-danger">ビューの読み込みに失敗しました</div>`;
+        console.error(err);
+      });
+  }
+
+  // 初期表示：table_listをロード
+  window.addEventListener('DOMContentLoaded', () => {
+    loadTabView('table_list');
+  });
+</script>
+
+</body>
+
+</html>

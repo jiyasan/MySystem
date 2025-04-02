@@ -27,24 +27,24 @@ public class AdminDashboardController {
     }
 
     // 店舗一覧
-    @GetMapping("/shop_list")
+    @GetMapping("/shop/list")
     public String showShopList(Model model) {
         List<Shop> shopList = shopService.findAll();
         model.addAttribute("shopList", shopList);
-        return "admin/dashboard/shop_list";
+        return "admin/dashboard/shop/list";
     }
 
     // 従業員一覧
-    @GetMapping("/employee_list")
+    @GetMapping("/employee/list")
     public String showEmployeeList(Model model) {
         // employeeService で一覧取得
-        return "admin/dashboard/employee_list";
+        return "admin/dashboard/employee/list";
     }
 
     // シフト管理
-    @GetMapping("/shift_management")
+    @GetMapping("/shift/management")
     public String showShiftManagement() {
-        return "admin/dashboard/shift_management";
+        return "admin/dashboard/shift/management";
     }
 
     // ログアウト

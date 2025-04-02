@@ -18,6 +18,6 @@ public interface ShopService {
 
 	boolean isShopNameDuplicate(String shopName);
 
-	void addShop(String shopName);
+    int addShop(String shopName); // ← 戻り値を int に
 
 }

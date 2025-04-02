@@ -28,13 +28,13 @@
 
 	<!-- 店舗を新規登録 -->
 	<insert id="insertShop"
-		parameterType="com.example.app.entity.Shop">
-		INSERT INTO shops (
-		shop_name
-		) VALUES (
-		#{shopName}
-		)
+		parameterType="com.example.app.entity.Shop" useGeneratedKeys="true"
+		keyProperty="shopId">
+		INSERT INTO shops (shop_name)
+		VALUES (#{shopName})
 	</insert>
+
+
 
 	<!-- 店舗情報を更新 -->
 	<update id="updateShop" parameterType="Shop">
@@ -53,5 +53,5 @@
 		logo_image = #{logoImage}
 		WHERE shop_id = #{shopId}
 	</update>
-	
+
 </mapper>

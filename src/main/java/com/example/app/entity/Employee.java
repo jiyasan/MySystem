@@ -12,7 +12,7 @@ public class Employee {
     private String password;         // ← loginPass → password に変更！
     private Integer shopId;
     private Integer position;
-    private String stuffName;        // ← employeeName → stuffName に変更！
+    private String staffName;
     private Date birthday;           // 任意で追加してもOK
     private Boolean enrollmentStatus; // 任意で追加
     private LocalDateTime createdAt; // 任意で追加

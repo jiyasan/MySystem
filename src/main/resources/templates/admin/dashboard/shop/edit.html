@@ -12,7 +12,7 @@
 	<div class="container mt-4">
 		<h1 class="mb-4">店舗情報の編集</h1>
 
-		<form th:action="@{'/admin/dashboard/shop_edit/' + ${shop.shopId}}" method="post">
+		<form th:action="@{'/admin/dashboard/shop/edit/' + ${shop.shopId}}" method="post">
 			<table class="table table-bordered">
 				<tbody>
 					<tr>
@@ -73,7 +73,7 @@
 							<form th:action="@{'/admin/dashboard/upload_logo/' + ${shop.shopId}}" method="post"
 								enctype="multipart/form-data">
 								<div class="input-group">
-									<input type="file" class="form-control" name="file" accept="image/*" required />
+									<input type="file" class="form-control" name="file" accept="image/*" />
 									<button type="submit" class="btn btn-outline-primary">追加</button>
 								</div>
 							</form>
@@ -105,7 +105,7 @@
 
 			<div class="mt-4">
 				<button type="submit" class="btn btn-primary">保存</button>
-				<a th:href="@{/admin/dashboard/shop_detail/{id}(id=${shop.shopId})}" class="btn btn-secondary">キャンセル</a>
+				<a th:href="@{/admin/dashboard/shop/detail/{id}(id=${shop.shopId})}" class="btn btn-secondary">キャンセル</a>
 			</div>
 		</form>
 	</div>

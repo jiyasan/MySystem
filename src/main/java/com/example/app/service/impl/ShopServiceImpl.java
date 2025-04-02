@@ -31,11 +31,13 @@ public class ShopServiceImpl implements ShopService {
 	}
 
 	@Override
-	public void addShop(String shopName) {
-		Shop shop = new Shop();
-		shop.setShopName(shopName);
-		shopMapper.insertShop(shop);
+	public int addShop(String shopName) {
+	    Shop shop = new Shop();
+	    shop.setShopName(shopName);
+	    shopMapper.insertShop(shop); // ← INSERT後、自動でIDがセットされる
+	    return shop.getShopId(); // ← IDを返す
 	}
+
 
 	@Override
 	public int countByShopName(String shopName) {
