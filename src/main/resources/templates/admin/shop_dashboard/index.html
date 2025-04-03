@@ -26,7 +26,7 @@
 		<!-- ダッシュボードのメインボタン群 -->
 		<div class="row text-center">
 			<div class="col-4 mb-3">
-				<a th:href="@{'/workstation?shopId=' + ${shop.shopId} + '&view=table/list'}"
+				<a th:href="@{'/admin/' + ${shop.shopId} + '_dashboard' + '/workstation'}"
 					class="btn btn-primary w-100 dashboard-button">テーブル一覧</a>
 			</div>
 			<div class="col-4 mb-3">

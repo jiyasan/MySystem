@@ -31,7 +31,7 @@
 				<tr th:each="shop : ${shopList}">
 					<td th:text="${shop.shopId}"></td>
 					<td>
-						<a th:href="@{'/' + ${shop.shopId} + '_dashboard'}" th:text="${shop.shopName}"></a>
+						<a th:href="@{'/admin/' + ${shop.shopId} + '_dashboard'}" th:text="${shop.shopName}"></a>
 					</td>
 					<td>
 						<a th:href="@{'/admin/dashboard/shop/detail/' + ${shop.shopId}}"
