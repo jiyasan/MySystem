@@ -8,6 +8,8 @@
 </head>
 
 <body>
+	<input type="hidden" id="shop-id" th:value="${shopId}">
+
 	<h2>店内レイアウトエディタ</h2>
 
 	<!-- 🧩 編集エリア -->
@@ -50,7 +52,10 @@
 		</thead>
 		<tbody></tbody>
 	</table>
-
+	
+	<div id="popup-menu"></div>
+	
 	<script th:src="@{/js/admin/layout-editor.js}" defer></script>
 </body>
+
 </html>

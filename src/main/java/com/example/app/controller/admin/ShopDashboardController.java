@@ -38,4 +38,12 @@ public class ShopDashboardController {
         model.addAttribute("shop", shop);
         return "admin/shop_dashboard/index"; // ← テンプレート
     }
+    
+    @GetMapping("/admin/{shopId}_dashboard/layout")
+    public String showLayoutIndex(@PathVariable("shopId") int shopId, Model model) {
+        model.addAttribute("shopId", shopId);
+        // TODO: レイアウトデータの取得
+        return "admin/shop_dashboard/layout/index";
+    }
+
 }

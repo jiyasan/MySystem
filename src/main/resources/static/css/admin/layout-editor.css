@@ -3,64 +3,98 @@
 /* layout-editor.css */
 
 body {
-    font-family: sans-serif;
-    padding: 1rem;
-    background-color: #f8f9fa;
-  }
-  
-  h2 {
-    margin-bottom: 1rem;
-  }
-  
-  #editor-panel {
-    margin-bottom: 1.5rem;
-    padding: 1rem;
-    border: 1px solid #ccc;
-    background: #fff;
-    border-radius: 8px;
-    width: fit-content;
-  }
-  
-  #layout-grid {
-    border-collapse: collapse;
-    margin-top: 1rem;
-  }
-  
-  #layout-grid th,
-  #layout-grid td {
-    border: 1px solid #ccc;
-    width: 50px;
-    height: 50px;
-    text-align: center;
-    vertical-align: middle;
-    padding: 0;
-  }
-  
-  #layout-grid th {
-    background-color: #eee;
-    font-weight: bold;
-  }
-  
-  .highlight {
-    background-color: rgba(0, 128, 255, 0.3);
-  }
-  
-  .overlap {
-    background-color: rgba(255, 0, 0, 0.4);
-    border: 2px solid red;
-  }
-  
-  button {
-    margin-top: 0.5rem;
-    padding: 0.3rem 0.8rem;
-    font-size: 0.9rem;
-    border-radius: 5px;
-    border: 1px solid #ccc;
-    background: #eee;
-    cursor: pointer;
-  }
-  
-  button:hover {
-    background: #ddd;
-  }
-  
+	font-family: sans-serif;
+	padding: 1rem;
+	background-color: #f8f9fa;
+}
+
+h2 {
+	margin-bottom: 1rem;
+}
+
+#editor-panel {
+	margin-bottom: 1.5rem;
+	padding: 1rem;
+	border: 1px solid #ccc;
+	background: #fff;
+	border-radius: 8px;
+	width: fit-content;
+}
+
+#layout-grid {
+	border-collapse: collapse;
+	margin-top: 1rem;
+}
+
+#layout-grid th,
+#layout-grid td {
+	border: 1px solid #ccc;
+	width: 50px;
+	height: 50px;
+	text-align: center;
+	vertical-align: middle;
+	padding: 0;
+}
+
+#layout-grid th {
+	background-color: #eee;
+	font-weight: bold;
+}
+
+table {
+	border-collapse: collapse;
+}
+
+th,
+td {
+	border: 1px solid #aaa;
+	width: 40px;
+	height: 40px;
+	text-align: center;
+}
+
+th {
+	background-color: #f2f2f2;
+	font-weight: bold;
+	cursor: pointer;
+	position: relative;
+}
+
+#popup-menu {
+	position: absolute;
+	background-color: white;
+	border: 1px solid #ccc;
+	padding: 5px;
+	box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.2);
+	display: none;
+	z-index: 10;
+}
+
+#popup-menu button {
+	display: block;
+	width: 100%;
+	margin-bottom: 4px;
+}
+
+.highlight {
+	background-color: rgba(0, 128, 255, 0.3);
+}
+
+.overlap {
+	background-color: rgba(255, 0, 0, 0.4);
+	border: 2px solid red;
+}
+
+button {
+	margin-top: 0.5rem;
+	padding: 0.3rem 0.8rem;
+	font-size: 0.9rem;
+	border-radius: 5px;
+	border: 1px solid #ccc;
+	background: #eee;
+	cursor: pointer;
+}
+
+button:hover {
+	background: #ddd;
+}

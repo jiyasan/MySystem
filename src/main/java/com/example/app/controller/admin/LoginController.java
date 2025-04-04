@@ -16,7 +16,7 @@ import com.example.app.service.ShopService;
 import jakarta.servlet.http.HttpSession;
 
 @Controller
-public class AdminLoginController {
+public class LoginController {
 
 	@Autowired
 	private EmployeeService employeeService;
