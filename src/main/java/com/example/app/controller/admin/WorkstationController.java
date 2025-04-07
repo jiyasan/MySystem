@@ -1,5 +1,7 @@
 package com.example.app.controller.admin;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -7,6 +9,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import com.example.app.dto.LayoutItem;
 import com.example.app.entity.Employee;
 import com.example.app.entity.Shop;
 import com.example.app.service.ShopService;
@@ -41,11 +44,12 @@ public class WorkstationController {
 		return "admin/shop_dashboard/workstation/index";
 	}
 	
-	@GetMapping("/workstation/table_list")
+	@GetMapping("/workstation/table/list")
 	public String tableListPartial(@RequestParam("shopId") int shopId, Model model) {
-	    // 必要なデータ取得
+	    List<LayoutItem> layoutItems = layoutService.getLayoutWithStatus(shopId); // ← 状態付き
+	    model.addAttribute("layoutItems", layoutItems);
 	    model.addAttribute("shopId", shopId);
-	    return "fragments/workstation/table_list"; // 例：部分テンプレ
+	    return "admin/shop_dashboard/table/list"; // 例：部分テンプレ
 	}
 
 

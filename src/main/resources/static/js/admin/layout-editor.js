@@ -30,8 +30,21 @@ class LayoutEditor {
 		this.selectedCol = null;
 		this.gridData = [];
 		this.unsaved = false;
-		this.COLS = 10;
-		this.ROWS = 8;
+
+		// ⬆ layoutItems の最大値により行列数を自動設定
+		let defaultRows = 8;
+		let defaultCols = 10;
+		if (this.layoutItems?.length) {
+			this.layoutItems.forEach(item => {
+				const bottom = item.rowIndex + (item.rowspan || 1);
+				const right = item.colIndex + (item.colspan || 1);
+				if (bottom > defaultRows) defaultRows = bottom;
+				if (right > defaultCols) defaultCols = right;
+			});
+		}
+		this.ROWS = defaultRows;
+		this.COLS = defaultCols;
+
 		this.isDraggingVertical = false;
 		this.isDraggingHorizontal = false;
 
@@ -123,13 +136,32 @@ class LayoutEditor {
 						color: item.color,
 						isBase: true
 					};
-					const td = this.tbody.rows[r].cells[c + 1]; // +1 は左側の行番号th分
-					if (td) {
-						td.setAttribute("rowspan", item.rowspan);
-						td.setAttribute("colspan", item.colspan);
+				const td = this.tbody.rows[r].cells[c + 1]; // +1 は左側の行番号th分
+				if (td) {
+					td.setAttribute("rowspan", item.rowspan);
+					td.setAttribute("colspan", item.colspan);
+					td.textContent = item.name ?? "";
+					if (item.color) td.style.backgroundColor = item.color; // ← これだけでOK
+				}
+
+								// 非ベースセルを非表示化
+			for (let i = r; i < r + item.rowspan; i++) {
+				for (let j = c; j < c + item.colspan; j++) {
+					if (i === r && j === c) continue; // ベースセルはスキップ
+					const otherTd = this.tbody.rows[i]?.cells[j + 1];
+					if (otherTd) {
+						otherTd.style.display = "none";
+						this.gridData[i][j] = {
+							type: item.type,
+							name: item.name,
+							color: item.color,
+							isBase: false
+						};
 					}
 				}
-			});
+			}
+		}
+	});
 		}
 	}
 

@@ -33,6 +33,7 @@
 		FROM shop_layouts
 		WHERE shop_id = #{shopId}
 		AND is_deleted = false
+		AND is_base = true
 	</select>
 
 	<!-- 非表示テーブル（type = 'table'）だけ欲しい場合） -->

@@ -12,29 +12,26 @@
 
 	<!-- 👇 レイアウト表示エリア -->
 	<div id="layout-grid-wrapper">
-		<!-- th:each で既存のレイアウトを表示 -->
-		<table id="layout-grid">
+		<table id="layout-grid" class="table table-bordered">
 			<thead>
-				<tr></tr>
+				<tr><th></th></tr>
 			</thead>
 			<tbody></tbody>
 		</table>
-
 	</div>
 
 	<!-- 👇 ボタン -->
 	<div style="margin-top: 20px;">
 		<a th:href="@{'/admin/' + ${shopId} + '_dashboard/layout/edit'}">編集</a>
-
 		<a th:href="@{'/admin/' + ${shopId} + '_dashboard'}">戻る</a>
-
 	</div>
-<script th:inline="javascript">
-  /*<![CDATA[*/
-  const layoutItems = /*[[${layoutItems}]]*/ [];
-  const shopId = /*[[${shopId}]]*/ 0;
-  /*]]>*/
-</script>
+
+	<script th:inline="javascript">
+		/*<![CDATA[*/
+		window.layoutItems = /*[[${layoutItems}]]*/ [];
+		window.shopId = /*[[${shopId}]]*/ 0;
+		/*]]>*/
+	</script>
 
 	<script th:src="@{/js/admin/layout-viewer.js}" defer></script>
 
