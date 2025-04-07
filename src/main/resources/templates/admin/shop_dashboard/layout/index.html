@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+	<meta charset="UTF-8" />
+	<title>レイアウト確認</title>
+	<link rel="stylesheet" th:href="@{/css/admin/layout-editor.css}">
+</head>
+
+<body>
+	<h1>現在のレイアウト</h1>
+
+	<!-- 👇 レイアウト表示エリア -->
+	<div id="layout-grid-wrapper">
+		<!-- th:each で既存のレイアウトを表示 -->
+		<table id="layout-grid">
+			<thead>
+				<tr></tr>
+			</thead>
+			<tbody></tbody>
+		</table>
+
+	</div>
+
+	<!-- 👇 ボタン -->
+	<div style="margin-top: 20px;">
+		<a th:href="@{'/admin/' + ${shopId} + '_dashboard/layout/edit'}">編集</a>
+
+		<a th:href="@{'/admin/' + ${shopId} + '_dashboard'}">戻る</a>
+
+	</div>
+<script th:inline="javascript">
+  /*<![CDATA[*/
+  const layoutItems = /*[[${layoutItems}]]*/ [];
+  const shopId = /*[[${shopId}]]*/ 0;
+  /*]]>*/
+</script>
+
+	<script th:src="@{/js/admin/layout-viewer.js}" defer></script>
+
+</body>
+
+</html>

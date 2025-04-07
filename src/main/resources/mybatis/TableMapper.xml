@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.example.app.mapper.TableMapper">
+
+
+	<!-- 🎯 1. テーブル追加 -->
+	<insert id="insert" parameterType="com.example.app.entity.Table">
+		INSERT INTO tables (
+		shop_id,
+		table_name,
+		status,
+		is_deleted
+		) VALUES (
+		#{shopId},
+		#{tableName},
+		#{status},
+		#{isDeleted}
+		)
+	</insert>
+
+	<!-- 🔎 2. テーブル名で検索 -->
+ 	<select id="findByShopIdAndName" parameterType="map"
+		resultType="com.example.app.entity.Table">
+		SELECT
+		table_id AS tableId,
+		shop_id AS shopId,
+		table_name AS tableName,
+		status,
+		is_deleted AS isDeleted
+		FROM tables
+		WHERE shop_id = #{shopId}
+		AND table_name = #{tableName}
+		LIMIT 1
+	</select>
+
+
+	<!-- ♻️ 3. テーブル復活 -->
+	<update id="revive" parameterType="map">
+		UPDATE tables
+		SET is_deleted = false
+		WHERE shop_id = #{shopId}
+		AND table_name = #{tableName}
+	</update>
+
+	<!-- 🗑 4. 物理削除 -->
+	<delete id="deleteByShopId" parameterType="int">
+		DELETE FROM tables
+		WHERE shop_id = #{shopId}
+	</delete>
+
+</mapper>

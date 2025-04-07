@@ -1,66 +1,81 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="ja">
+
 <head>
-  <meta charset="UTF-8">
-  <title>店内レイアウトエディタ</title>
-  <link rel="stylesheet" th:href="@{/css/admin/layout-editor.css}">
+	<meta charset="UTF-8">
+	<title>店内レイアウトエディタ</title>
+	<link rel="stylesheet" th:href="@{/css/admin/layout-editor.css}">
 </head>
+
 <body>
-  <input type="hidden" id="shop-id" th:value="${shopId}">
-  <h2>店内レイアウトエディタ</h2>
-  <div id="layout-editor-container">
-    <!-- 🔼 グリッドエリア -->
-    <div id="layout-grid-wrapper">
-      <table id="layout-grid" class="table table-bordered">
-        <thead><tr><th></th></tr></thead>
-        <tbody></tbody>
-      </table>
-      <div id="popup-menu"></div>
-    </div>
+	<input type="hidden" id="shop-id" th:value="${shopId}">
+	<h2>店内レイアウトエディタ</h2>
+	<div id="layout-editor-container">
+		<!-- 🔼 グリッドエリア -->
+		<div id="layout-grid-wrapper">
+			<table id="layout-grid" class="table table-bordered">
+				<thead>
+					<tr>
+						<th></th>
+					</tr>
+				</thead>
+				<tbody></tbody>
+			</table>
+			<div id="popup-menu"></div>
+		</div>
 
-    <!-- 🔘 ドラッグバー（上下） -->
-    <div id="horizontal-divider"></div>
+		<!-- 🔘 ドラッグバー（上下） -->
+		<div id="horizontal-divider"></div>
 
-    <!-- 🔽 編集パネル + テーブル一覧 -->
-    <div id="bottom-panel-wrapper">
-      <div id="horizontal-flex-wrapper">
-        <div id="editor-panel">
-          <p>選択中のセル：<span id="selected-cell">なし</span></p>
-          <label>サイズ：
-            縦 <input type="number" id="obj-height" min="1" value="1" style="width: 3em">
-            × 横 <input type="number" id="obj-width" min="1" value="1" style="width: 3em">
-          </label><br>
-          <label><input type="radio" name="obj-type" value="table" checked> テーブル</label>
-          <label><input type="radio" name="obj-type" value="other"> その他</label><br>
-          <label>名前：<input type="text" id="obj-name" style="width: 200px"></label>
-          <label id="color-picker-label" style="display: none;">
-            背景色：<input type="color" id="obj-color" value="#cccccc">
-          </label><br>
-          <button id="place-btn">配置</button>
-          <button id="delete-btn" class="btn btn-danger">削除</button><br><br>
-          <button id="confirm-btn">この配置を確定する</button>
-          <p id="unsaved-warning" style="color: red; display: none; font-weight: bold;">
-            ※まだ編集は反映されていません
-          </p>
-        </div>
+		<!-- 🔽 編集パネル + テーブル一覧 -->
+		<div id="bottom-panel-wrapper">
+			<div id="horizontal-flex-wrapper">
+				<div id="editor-panel">
+					<p>選択中のセル：<span id="selected-cell">なし</span></p>
+					<label>サイズ：
+						縦 <input type="number" id="obj-height" min="1" value="1" style="width: 3em">
+						× 横 <input type="number" id="obj-width" min="1" value="1" style="width: 3em">
+					</label><br>
+					<label><input type="radio" name="obj-type" value="table" checked> テーブル</label>
+					<label><input type="radio" name="obj-type" value="other"> その他</label><br>
+					<label>名前：<input type="text" id="obj-name" style="width: 200px"></label>
+					<label id="color-picker-label" style="display: none;">
+						背景色：<input type="color" id="obj-color" value="#cccccc">
+					</label><br>
+					<button id="place-btn">配置</button>
+					<button id="delete-btn" class="btn btn-danger">削除</button><br><br>
+					<button id="confirm-btn">この配置を確定する</button>
+					<p id="unsaved-warning" style="color: red; display: none; font-weight: bold;">
+						※まだ編集は反映されていません
+					</p>
+				</div>
 
-        <!-- 🔘 横ドラッグバー -->
-        <div id="vertical-divider"></div>
+				<!-- 🔘 横ドラッグバー -->
+				<div id="vertical-divider"></div>
 
-        <div id="table-list">
-          <h3>使用中テーブル</h3>
-          <ul id="used-tables">
-            <li>現在使用中のテーブルはありません</li>
-          </ul>
-          <h3>非表示テーブル</h3>
-          <ul id="hidden-tables">
-            <li>非表示中のテーブルはありません</li>
-          </ul>
-        </div>
-      </div>
-    </div>
-  </div>
+				<div id="table-list">
+					<h3>使用中テーブル</h3>
+					<ul id="used-tables">
+						<li th:each="item : ${usedTables}" th:text="${item.name}">テーブル名</li>
+					</ul>
+					<h3>非表示テーブル</h3>
+					<ul id="hidden-tables">
+						<li th:each="item : ${hiddenTables}" th:text="${item.name}">非表示テーブル</li>
+					</ul>
+				</div>
+			</div>
+		</div>
+	</div>
 
-  <script th:src="@{/js/admin/layout-editor.js}" defer></script>
+<script th:inline="javascript">
+  /*<![CDATA[*/
+  const layoutItems = /*[[${layoutItems}]]*/ [];
+  const shopId = /*[[${shopId}]]*/ 0;
+  /*]]>*/
+</script>
+
+	<script th:src="@{/js/admin/layout-editor.js}" defer></script>
+
 </body>
+
 </html>
