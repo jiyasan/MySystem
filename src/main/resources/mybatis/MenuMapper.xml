@@ -5,34 +5,129 @@
 
 <mapper namespace="com.example.app.mapper.MenuMapper">
 
-  <!-- 大分類 全件 -->
-  <select id="findAllCategories" resultType="com.example.app.entity.MenuCategory">
-    SELECT * FROM menu_categories ORDER BY category_id
-  </select>
+	<!-- 大分類 全件取得 -->
+	<select id="findCategoriesByShopId"
+		resultType="com.example.app.entity.MenuCategory">
+		SELECT * FROM menu_categories
+		WHERE shop_id = #{shopId} OR
+		shop_id = 0
+		ORDER BY category_id
+	</select>
 
-  <!-- 中分類（大分類IDで絞る） -->
-  <select id="findSubcategoriesByCategoryId" resultType="com.example.app.entity.MenuSubcategory">
-    SELECT * FROM menu_subcategories
-    WHERE category_id = #{categoryId}
-    ORDER BY subcategory_id
-  </select>
+	<!-- 中分類取得（大分類IDで絞る） -->
+	<select id="findSubcategoriesByCategoryId"
+		resultType="com.example.app.entity.MenuSubcategory">
+		SELECT * FROM menu_subcategories
+		WHERE category_id =
+		#{categoryId}
+		AND (shop_id = #{shopId} OR shop_id = 0)
+		ORDER BY
+		subcategory_id
+	</select>
 
-  <!-- 商品（中分類IDで絞る） -->
-  <select id="findItemsBySubcategoryId" resultType="com.example.app.entity.MenuItem">
-    SELECT * FROM menu_items
-    WHERE item_subcategory = #{subcategoryId}
-    ORDER BY menu_item_id
-  </select>
 
-  <!-- 商品登録 -->
-  <insert id="insertMenuItem" parameterType="com.example.app.entity.MenuItem">
-    INSERT INTO menu_items (
-      item_category, item_subcategory, item_name, item_detail,
-      item_image, price, note, is_visible, is_orderable, stock_quantity
-    ) VALUES (
-      #{itemCategory}, #{itemSubcategory}, #{itemName}, #{itemDetail},
-      #{itemImage}, #{price}, #{note}, #{isVisible}, #{isOrderable}, #{stockQuantity}
-    )
-  </insert>
+	<!-- 商品取得（中分類IDで絞る） -->
+	<select id="findItemsBySubcategoryId"
+		resultType="com.example.app.entity.MenuItem">
+		SELECT * FROM menu_items
+		WHERE item_subcategory =
+		#{subcategoryId}
+		ORDER BY menu_item_id
+	</select>
+
+	<!-- 商品取得（店舗IDで絞る） -->
+	<select id="findItemsByShopId"
+		resultType="com.example.app.entity.MenuItem">
+		SELECT * FROM menu_items
+		WHERE shop_id = #{shopId} OR
+		shop_id = 0
+		ORDER BY menu_item_id
+	</select>
+
+	<!-- 大分類追加 -->
+	<insert id="insertCategory"
+		parameterType="com.example.app.entity.MenuCategory">
+		INSERT INTO menu_categories (
+		shop_id,
+		category_name
+		)
+		VALUES (
+		#{shopId},
+		#{categoryName}
+		)
+	</insert>
+
+	<!-- 中分類追加 -->
+	<insert id="insertSubcategory"
+		parameterType="com.example.app.entity.MenuSubcategory">
+		INSERT INTO menu_subcategories (
+		shop_id,
+		category_id,
+		subcategory_name
+		) VALUES (
+		#{shopId},
+		#{categoryId},
+		#{subcategoryName}
+		)
+	</insert>
+
+	<!-- 商品登録 -->
+	<insert id="insertMenuItem"
+		parameterType="com.example.app.entity.MenuItem">
+		INSERT INTO menu_items (
+		shop_id, item_category,
+		item_subcategory,
+		item_name, item_detail,
+		item_image, price, note,
+		is_visible,
+		is_orderable, stock_quantity
+		) VALUES (
+		#{shopId},
+		#{itemCategory}, #{itemSubcategory}, #{itemName},
+		#{itemDetail},
+		#{itemImage}, #{price},
+		#{note}, #{isVisible}, #{isOrderable},
+		#{stockQuantity}
+		)
+	</insert>
+
+	<!-- 大分類編集 -->
+	<update id="updateCategory"
+		parameterType="com.example.app.entity.MenuCategory">
+		UPDATE menu_categories
+		SET category_name =
+		#{categoryName}
+		WHERE category_id = #{categoryId}
+	</update>
+
+	<!-- 中分類編集 -->
+	<update id="updateSubcategory"
+		parameterType="com.example.app.entity.MenuSubcategory">
+		UPDATE menu_subcategories
+		SET subcategory_name =
+		#{subcategoryName}
+		WHERE subcategory_id = #{subcategoryId}
+	</update>
+
+	<!-- 商品追加 -->
+	<update id="updateMenuItem"
+		parameterType="com.example.app.entity.MenuItem">
+		UPDATE menu_items
+		SET
+		item_category = #{itemCategory},
+		item_subcategory = #{itemSubcategory},
+		item_name = #{itemName},
+		item_detail = #{itemDetail},
+		item_image = #{itemImage},
+		price =
+		#{price},
+		note = #{note},
+		is_visible = #{isVisible},
+		is_orderable =
+		#{isOrderable},
+		stock_quantity = #{stockQuantity}
+		WHERE menu_item_id =
+		#{menuItemId}
+	</update>
 
 </mapper>

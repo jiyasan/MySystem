@@ -1,4 +1,5 @@
 document.addEventListener("DOMContentLoaded", () => {
+
 	const layoutItems = window.layoutItems || [];
 
 	const defaultRows = 8;
@@ -41,7 +42,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 	// データ反映（ベースセルのみ）
 	layoutItems.forEach(item => {
-		if (!item.isBase) return;
+		if (!item.base) return;
 
 		const r = item.rowIndex;
 		const c = item.colIndex;

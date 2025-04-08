@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+	<meta charset="UTF-8">
+	<title>テーブル一覧</title>
+	<link rel="stylesheet" th:href="@{/css/admin/layout-editor.css}">
+</head>
+<body>
+
+<div id="layout-grid-wrapper">
+	<table id="layout-grid" class="table table-bordered">
+		<thead>
+			<tr><th></th></tr>
+		</thead>
+		<tbody></tbody>
+	</table>
+</div>
+<!-- inline script（先にwindowに代入） -->
+<script th:inline="javascript">
+/*<![CDATA[*/
+window.layoutItems = /*[[${layoutItems}]]*/ [];
+window.shopId = /*[[${shopId}]]*/ 0;
+/*]]>*/
+</script>
+
+<!-- scriptファイル（その後にtable.jsを読み込む） -->
+<script th:src="@{/js/admin/table.js}" defer></script>
+
+
+</body>
+</html>

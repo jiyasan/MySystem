@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.example.app.mapper.TableStatusMapper">
+
+    <select id="findStatusByShopId" parameterType="int" resultType="com.example.app.dto.TableStatus">
+        SELECT
+            table_name,
+            CASE status
+                WHEN 0 THEN 'empty'
+                WHEN 1 THEN 'using'
+                WHEN 2 THEN 'preparing'
+                ELSE 'empty'
+            END AS status
+        FROM tables
+        WHERE shop_id = #{shopId}
+        AND is_deleted = 0
+    </select>
+
+</mapper>

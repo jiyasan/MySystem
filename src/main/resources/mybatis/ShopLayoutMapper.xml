@@ -6,92 +6,85 @@
 <mapper namespace="com.example.app.mapper.ShopLayoutMapper">
 
 	<!-- 追加 -->
-	<insert id="insert"
-		parameterType="com.example.app.dto.LayoutItem">
+	<insert id="insert" parameterType="com.example.app.dto.LayoutItem">
 		INSERT INTO shop_layouts (
-		shop_id, row_index, col_index,
-		type, name, color, rowspan, colspan, is_base
+			shop_id, row_index, col_index,
+			type, name, color, rowspan, colspan, is_base
 		) VALUES (
-		#{shopId}, #{rowIndex},
-		#{colIndex}, #{type}, #{name}, #{color}, #{rowspan}, #{colspan}, #{isBase}
+			#{shopId}, #{rowIndex},
+			#{colIndex}, #{type}, #{name}, #{color}, #{rowspan}, #{colspan}, #{base}
 		)
 	</insert>
 
 	<!-- 一覧取得（index.html用） -->
-	<!-- 使用中 -->
-	<select id="findByShopId" parameterType="int"
-		resultType="com.example.app.dto.LayoutItem">
+	<select id="findByShopId" parameterType="int" resultType="com.example.app.dto.LayoutItem">
 		SELECT
-		row_index,
-		col_index,
-		type,
-		name,
-		color,
-		rowspan,
-		colspan,
-		is_base
+			row_index,
+			col_index,
+			type,
+			name,
+			color,
+			rowspan,
+			colspan,
+			is_base AS base
 		FROM shop_layouts
 		WHERE shop_id = #{shopId}
 		AND is_deleted = false
 		AND is_base = true
 	</select>
 
-	<!-- 非表示テーブル（type = 'table'）だけ欲しい場合） -->
-	<select id="findHiddenByShopId" parameterType="int"
-		resultType="com.example.app.dto.LayoutItem">
+	<!-- 非表示テーブル（type = 'table'）だけ欲しい場合 -->
+	<select id="findHiddenByShopId" parameterType="int" resultType="com.example.app.dto.LayoutItem">
 		SELECT
-		row_index,
-		col_index,
-		type,
-		name,
-		color,
-		rowspan,
-		colspan,
-		is_base
+			row_index,
+			col_index,
+			type,
+			name,
+			color,
+			rowspan,
+			colspan,
+			is_base AS base
 		FROM shop_layouts
 		WHERE shop_id = #{shopId}
 		AND is_deleted = true
 		AND type = 'table'
 	</select>
 
-
 	<!-- 論理削除 -->
 	<update id="logicalDeleteByShopId">
 		UPDATE shop_layouts
 		SET is_deleted = true,
-		updated_at =
-		NOW()
+		    updated_at = NOW()
 		WHERE shop_id = #{shopId}
 	</update>
 
-	<!-- 更新 -->
+	<!-- 更新（UPSERT） -->
 	<insert id="upsert">
 		INSERT INTO shop_layouts (
-		shop_id, row_index,
-		col_index, type, name, color,
-		rowspan, colspan, is_base, is_deleted, updated_at
+			shop_id, row_index,
+			col_index, type, name, color,
+			rowspan, colspan, is_base, is_deleted, updated_at
 		)
 		VALUES (
-		#{shopId}, #{item.rowIndex}, #{item.colIndex}, #{item.type},
-		#{item.name}, #{item.color}, #{item.rowspan}, #{item.colspan},
-		#{item.isBase}, false,
-		NOW()
+			#{shopId}, #{item.rowIndex}, #{item.colIndex}, #{item.type},
+			#{item.name}, #{item.color}, #{item.rowspan}, #{item.colspan},
+			#{item.base}, false, NOW()
 		)
 		ON DUPLICATE KEY UPDATE
-		type = VALUES(type),
-		name = VALUES(name),
-		color = VALUES(color),
-		rowspan = VALUES(rowspan),
-		colspan = VALUES(colspan),
-		is_base = VALUES(is_base),
-		is_deleted = false,
-		updated_at = NOW()
+			type = VALUES(type),
+			name = VALUES(name),
+			color = VALUES(color),
+			rowspan = VALUES(rowspan),
+			colspan = VALUES(colspan),
+			is_base = VALUES(is_base),
+			is_deleted = false,
+			updated_at = NOW()
 	</insert>
 
 	<!-- 削除 -->
 	<delete id="deleteByShopId" parameterType="int">
-		DELETE FROM
-		shop_layouts WHERE shop_id = #{shopId}
+		DELETE FROM shop_layouts
+		WHERE shop_id = #{shopId}
 	</delete>
 
 </mapper>

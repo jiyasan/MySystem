@@ -7,11 +7,15 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import com.example.app.dto.LayoutItem;
 import com.example.app.entity.Employee;
+import com.example.app.entity.MenuCategory;
+import com.example.app.entity.MenuItem;
+import com.example.app.entity.MenuSubcategory;
 import com.example.app.entity.Shop;
+import com.example.app.mapper.MenuMapper;
+import com.example.app.service.LayoutService;
 import com.example.app.service.ShopService;
 
 import jakarta.servlet.http.HttpSession;
@@ -20,8 +24,14 @@ import jakarta.servlet.http.HttpSession;
 public class WorkstationController {
 
 	@Autowired
+	private LayoutService layoutService;
+
+	@Autowired
 	private ShopService shopService;
 
+	@Autowired
+	private MenuMapper menuMapper;
+	
 	@GetMapping("/admin/{shopId}_dashboard/workstation")
 	public String showWorkstation(
 			@PathVariable("shopId") int shopId,
@@ -43,14 +53,32 @@ public class WorkstationController {
 
 		return "admin/shop_dashboard/workstation/index";
 	}
-	
-	@GetMapping("/workstation/table/list")
-	public String tableListPartial(@RequestParam("shopId") int shopId, Model model) {
-	    List<LayoutItem> layoutItems = layoutService.getLayoutWithStatus(shopId); // ← 状態付き
-	    model.addAttribute("layoutItems", layoutItems);
-	    model.addAttribute("shopId", shopId);
-	    return "admin/shop_dashboard/table/list"; // 例：部分テンプレ
+
+	@GetMapping("/admin/{shopId}_dashboard/workstation/table/list")
+	public String tableListPartial(@PathVariable("shopId") int shopId, Model model) {
+		List<LayoutItem> layoutItems = layoutService.getLayoutWithStatus(shopId);
+		model.addAttribute("layoutItems", layoutItems);
+		model.addAttribute("shopId", shopId);
+		return "admin/shop_dashboard/workstation/table/list";
 	}
 
+	@GetMapping("/admin/{shopId}_dashboard/workstation/menu/list")
+	public String showMenuList(@PathVariable("shopId") int shopId, Model model) {
+	    List<MenuCategory> categoryList = menuMapper.findCategoriesByShopId(shopId);
+	    List<MenuSubcategory> subcategoryList = menuMapper.findSubcategoriesByShopId(shopId);
+	    List<MenuItem> itemList = menuMapper.findItemsByShopId(shopId);
+
+	    model.addAttribute("shopId", shopId);
+	    model.addAttribute("categoryList", categoryList);
+	    model.addAttribute("subcategoryList", subcategoryList);
+	    model.addAttribute("itemList", itemList);
+	    return "admin/shop_dashboard/workstation/menu_list";
+	}
+
+	@GetMapping("/admin/{shopId}_dashboard/workstation/order/list")
+	public String orderList(@PathVariable int shopId, Model model) {
+		model.addAttribute("shopId", shopId);
+		return "admin/shop_dashboard/workstation/order/list";
+	}
 
 }

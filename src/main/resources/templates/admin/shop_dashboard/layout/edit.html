@@ -4,16 +4,19 @@
 <head>
 	<meta charset="UTF-8">
 	<title>店内レイアウトエディタ</title>
-	<link rel="stylesheet" th:href="@{/css/admin/layout-editor.css}">
+	<link rel="stylesheet" th:href="@{/css/bootstrap.min.css}" />
+	<link rel="stylesheet" th:href="@{/css/admin/layout-editor.css}" />
 </head>
 
 <body>
 	<input type="hidden" id="shop-id" th:value="${shopId}">
-	<h2>店内レイアウトエディタ</h2>
+
+	<h3 class="text-center mb-3" th:text="${shop.shopName} + ' ：店内レイアウトエディタ'">店内レイアウトエディタ</h3>
+
 	<div id="layout-editor-container">
 		<!-- 🔼 グリッドエリア -->
 		<div id="layout-grid-wrapper">
-			<table id="layout-grid" class="table table-bordered">
+			<table id="layout-grid" class="table table-bordered text-center align-middle">
 				<thead>
 					<tr>
 						<th></th>
@@ -67,12 +70,12 @@
 		</div>
 	</div>
 
-<script th:inline="javascript">
-  /*<![CDATA[*/
-  const layoutItems = /*[[${layoutItems}]]*/ [];
-  const shopId = /*[[${shopId}]]*/ 0;
-  /*]]>*/
-</script>
+	<script th:inline="javascript">
+		/*<![CDATA[*/
+		const layoutItems = /*[[${layoutItems}]]*/[];
+		const shopId = /*[[${shopId}]]*/ 0;
+		/*]]>*/
+	</script>
 
 	<script th:src="@{/js/admin/layout-editor.js}" defer></script>
 

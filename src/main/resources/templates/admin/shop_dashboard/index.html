@@ -14,7 +14,7 @@
 
 <body>
 	<div class="container mt-1 position-relative">
-		
+
 		<div th:if="${loginUser}" class="d-flex justify-content-end align-items-center mb-2 gap-3">
 			<span th:text="${loginUser.staffName} + ' さんでログイン中'" class="text-muted small"></span>
 			<a th:href="@{/admin/logout}" class="btn btn-outline-secondary btn-sm">ログアウト</a>
@@ -25,31 +25,65 @@
 
 		<!-- ダッシュボードのメインボタン群 -->
 		<div class="row text-center">
+
+			<!-- ワークステーション（タブ付き） -->
 			<div class="col-4 mb-3">
-				<a th:href="@{'/admin/' + ${shop.shopId} + '_dashboard' + '/workstation'}"
-					class="btn btn-primary w-100 dashboard-button">テーブル一覧</a>
+				<a th:href="@{'/admin/' + ${shop.shopId} + '_dashboard/workstation#table'}"
+					class="btn btn-primary w-100 dashboard-button">
+					テーブル一覧
+				</a>
 			</div>
+
+			<!-- メニュー一覧 -->
 			<div class="col-4 mb-3">
-				<a th:href="@{'/workstation?shopId=' + ${shop.shopId} + '&view=menu/list'}"
-					class="btn btn-primary w-100 dashboard-button">メニュー一覧</a>
+				<a th:href="@{'/admin/' + ${shop.shopId} + '_dashboard/workstation#menu'}"
+					class="btn btn-primary w-100 dashboard-button">
+					メニュー一覧
+				</a>
 			</div>
+
+			<!-- オーダー一覧 -->
 			<div class="col-4 mb-3">
-				<a th:href="@{'/workstation?shopId=' + ${shop.shopId} + '&view=order/list'}"
-					class="btn btn-primary w-100 dashboard-button">オーダー一覧</a>
+				<a th:href="@{'/admin/' + ${shop.shopId} + '_dashboard/workstation#order'}"
+					class="btn btn-primary w-100 dashboard-button">
+					オーダー一覧
+				</a>
 			</div>
+			
+			<!-- 店舗レイアウト -->
+			<div class="col-4 mb-3">
+				<a th:href="@{'/admin/' + ${shop.shopId} + '_dashboard/layout'}"
+					class="btn btn-info w-100 dashboard-button">
+					店舗レイアウト
+				</a>
+			</div>
+
+			<!-- シフト管理 -->
 			<div class="col-4 mb-3">
 				<a th:href="@{'/admin/shift_management?shopId=' + ${shop.shopId}}"
-					class="btn btn-success w-100 dashboard-button">シフト管理</a>
+					class="btn btn-success w-100 dashboard-button">
+					シフト管理
+				</a>
 			</div>
+
+			<!-- スタッフ一覧 -->
 			<div class="col-4 mb-3">
 				<a th:href="@{'/admin/employees?shopId=' + ${shop.shopId}}"
-					class="btn btn-success w-100 dashboard-button">スタッフ一覧</a>
+					class="btn btn-success w-100 dashboard-button">
+					スタッフ一覧
+				</a>
 			</div>
+
+			<!-- メッセージ管理 -->
 			<div class="col-4 mb-3">
 				<a th:href="@{'/admin/messages?shopId=' + ${shop.shopId}}"
-					class="btn btn-warning w-100 dashboard-button">メッセージ管理</a>
+					class="btn btn-warning w-100 dashboard-button">
+					メッセージ管理
+				</a>
 			</div>
+
 		</div>
+
 
 	</div>
 

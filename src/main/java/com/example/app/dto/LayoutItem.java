@@ -9,8 +9,8 @@ public class LayoutItem {
 	private String color;
 	private int rowspan;
 	private int colspan;
-	private boolean isBase;
 	private String status;
+	private boolean base;
 
 	public LayoutItem() {
 		// デフォルトコンストラクタ必須（@RequestBody用）
@@ -72,20 +72,20 @@ public class LayoutItem {
 		this.colspan = colspan;
 	}
 
-	public boolean getIsBase() {
-		return isBase;
-	}
-
-	public void setIsBase(boolean isBase) {
-		this.isBase = isBase;
-	}
-
 	public String getStatus() {
 		return status;
 	}
 
 	public void setStatus(String status) {
 		this.status = status;
+	}
+
+	public boolean isBase() {
+		return base;
+	}
+
+	public void setBase(boolean base) {
+		this.base = base;
 	}
 
 	@Override

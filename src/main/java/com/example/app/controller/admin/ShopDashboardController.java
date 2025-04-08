@@ -13,6 +13,7 @@ import com.example.app.dto.LoginForm;
 import com.example.app.entity.Employee;
 import com.example.app.entity.Shop;
 import com.example.app.mapper.ShopLayoutMapper;
+import com.example.app.mapper.ShopMapper;
 import com.example.app.service.ShopService;
 
 import jakarta.servlet.http.HttpSession;
@@ -25,6 +26,9 @@ public class ShopDashboardController {
 
 	@Autowired
 	private ShopService shopService;
+	
+	@Autowired
+	private ShopMapper shopMapper;
 
 	@GetMapping("/admin/{shopId}_dashboard")
 	public String showShopDashboard(@PathVariable("shopId") int shopId, Model model, HttpSession session) {
@@ -47,10 +51,15 @@ public class ShopDashboardController {
 
 	@GetMapping("/admin/{shopId}_dashboard/layout")
 	public String showLayout(@PathVariable("shopId") int shopId, Model model) {
-		List<LayoutItem> layoutItems = shopLayoutMapper.findByShopId(shopId);
-		model.addAttribute("layoutItems", layoutItems);
-		model.addAttribute("shopId", shopId);
-		return "admin/shop_dashboard/layout/index";
+	    List<LayoutItem> layoutItems = shopLayoutMapper.findByShopId(shopId);
+	    Shop shop = shopMapper.findById(shopId); // ← ★ここがポイント
+
+	    model.addAttribute("layoutItems", layoutItems);
+	    model.addAttribute("shopId", shopId);
+	    model.addAttribute("shop", shop); // Shopオブジェクト
+
+	    return "admin/shop_dashboard/layout/index";
 	}
+
 
 }

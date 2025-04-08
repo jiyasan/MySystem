@@ -1,40 +1,49 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" lang="ja">
 
 <head>
 	<meta charset="UTF-8" />
-	<title>レイアウト確認</title>
-	<link rel="stylesheet" th:href="@{/css/admin/layout-editor.css}">
+	<title>店舗レイアウト表示</title>
+	<link rel="stylesheet" th:href="@{/css/bootstrap.min.css}" />
+	<link rel="stylesheet" th:href="@{/css/admin/layout-editor.css}" />
 </head>
 
 <body>
-	<h1>現在のレイアウト</h1>
+	<div class="container mt-1">
+		<h3 class="text-center mb-3" th:text="${shop.shopName} + ' ：店内レイアウト'">現在のレイアウト</h3>
 
-	<!-- 👇 レイアウト表示エリア -->
-	<div id="layout-grid-wrapper">
-		<table id="layout-grid" class="table table-bordered">
-			<thead>
-				<tr><th></th></tr>
-			</thead>
-			<tbody></tbody>
-		</table>
-	</div>
+		<!-- 👇 レイアウト表示エリア -->
+		<div id="layout-grid-wrapper" class="mb-4">
+			<table id="layout-grid" class="table table-bordered text-center align-middle">
+				<thead>
+					<tr>
+						<th></th>
+					</tr>
+				</thead>
+				<tbody></tbody>
+			</table>
+		</div>
 
-	<!-- 👇 ボタン -->
-	<div style="margin-top: 20px;">
-		<a th:href="@{'/admin/' + ${shopId} + '_dashboard/layout/edit'}">編集</a>
-		<a th:href="@{'/admin/' + ${shopId} + '_dashboard'}">戻る</a>
+		<!-- 👇 ボタン -->
+		<div class="d-flex justify-content-center gap-3">
+			<a th:href="@{'/admin/' + ${shopId} + '_dashboard/layout/edit'}" class="btn btn-primary">
+				編集
+			</a>
+			<a th:href="@{'/admin/' + ${shopId} + '_dashboard'}" class="btn btn-secondary">
+				戻る
+			</a>
+		</div>
+
 	</div>
 
 	<script th:inline="javascript">
 		/*<![CDATA[*/
-		window.layoutItems = /*[[${layoutItems}]]*/ [];
+		window.layoutItems = /*[[${layoutItems}]]*/[];
 		window.shopId = /*[[${shopId}]]*/ 0;
 		/*]]>*/
 	</script>
 
 	<script th:src="@{/js/admin/layout-viewer.js}" defer></script>
-
 </body>
 
 </html>

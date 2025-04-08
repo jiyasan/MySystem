@@ -9,7 +9,7 @@ const WorkstationApp = (function () {
 
   // ビュー読み込み関数
   function loadTabView(view) {
-    const url = `/workstation/${view}?shopId=${shopId}`;
+	const url = `/admin/${shopId}_dashboard/workstation/${view}/list`;
     fetch(url)
       .then(res => {
         if (!res.ok) throw new Error("読み込み失敗");
@@ -72,10 +72,13 @@ const WorkstationApp = (function () {
   }
 
   // ハッシュ監視
-  function handleHashChange() {
-    const hash = location.hash.replace('#', '') || 'table';
-    loadTabView(hash + '_list');
-  }
+	function handleHashChange() {
+	  const hash = location.hash.replace('#', '');
+	  const view = hash || 'table'; // デフォルトは table
+	
+	  loadTabView(view); // ← "_list" は不要（既に修正済）
+	}
+
 
   // 初期化
   function init() {

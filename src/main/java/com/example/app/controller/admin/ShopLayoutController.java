@@ -13,8 +13,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.example.app.dto.LayoutItem;
+import com.example.app.entity.Shop;
 import com.example.app.entity.Table;
 import com.example.app.mapper.ShopLayoutMapper;
+import com.example.app.mapper.ShopMapper;
 import com.example.app.mapper.TableMapper;
 
 @Controller
@@ -26,33 +28,38 @@ public class ShopLayoutController {
 
 	@Autowired
 	private TableMapper tableMapper;
-
 	
+	@Autowired
+	private ShopMapper shopMapper;
+
 	// 編集画面の表示
 	@GetMapping("/edit")
 	public String showLayoutEditor(@PathVariable("shopId") int shopId, Model model) {
-	    List<LayoutItem> layoutItems = shopLayoutMapper.findByShopId(shopId); // 使用中のみ
-	    model.addAttribute("shopId", shopId);
-	    model.addAttribute("layoutItems", layoutItems); // ← これを渡す！
+		List<LayoutItem> layoutItems = shopLayoutMapper.findByShopId(shopId); // 使用中のみ
+	    Shop shop = shopMapper.findById(shopId); // ← ★ここがポイント
 
-	    // ✅ 使用中テーブル（is_deleted = false）
-	    List<LayoutItem> usedTables = shopLayoutMapper.findByShopId(shopId);
-	    model.addAttribute("usedTables", usedTables);
+		model.addAttribute("shopId", shopId);
+		model.addAttribute("layoutItems", layoutItems); // ← これを渡す！
 
-	    // ✅ 非表示テーブル（is_deleted = true）
-	    List<LayoutItem> hiddenTables = shopLayoutMapper.findHiddenByShopId(shopId);
-	    model.addAttribute("hiddenTables", hiddenTables);
+		// ✅ 使用中テーブル（is_deleted = false）
+		List<LayoutItem> usedTables = shopLayoutMapper.findByShopId(shopId);
+		model.addAttribute("usedTables", usedTables);
+	    model.addAttribute("shop", shop); // ← ★これでテンプレートで使える
 
-	    return "admin/shop_dashboard/layout/edit";
+		// ✅ 非表示テーブル（is_deleted = true）
+		List<LayoutItem> hiddenTables = shopLayoutMapper.findHiddenByShopId(shopId);
+		model.addAttribute("hiddenTables", hiddenTables);
+	    model.addAttribute("shop", shop); // ← ★これでテンプレートで使える
+
+		return "admin/shop_dashboard/layout/edit";
 	}
-
 
 	// 配置確定 → 保存処理（JSONで受け取る）
 	@PostMapping("/save")
 	@ResponseBody
 	public String saveLayout(
-		@PathVariable("shopId") int shopId,
-		@RequestBody List<LayoutItem> layoutItems) {
+			@PathVariable("shopId") int shopId,
+			@RequestBody List<LayoutItem> layoutItems) {
 
 		// ① 既存レイアウトは論理削除
 		shopLayoutMapper.logicalDeleteByShopId(shopId);
@@ -82,6 +89,5 @@ public class ShopLayoutController {
 
 		return "OK";
 	}
-
 
 }

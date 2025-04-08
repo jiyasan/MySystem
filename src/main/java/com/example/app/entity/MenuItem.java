@@ -15,4 +15,5 @@ public class MenuItem {
     private Boolean isVisible;           // 表示可否（非公開 = false）
     private Boolean isOrderable;         // 売り切れ状態（false = 売切）
     private Integer stockQuantity;       // 在庫数（null = ∞）
+    private Integer shopId;              //店舗ID
 }
