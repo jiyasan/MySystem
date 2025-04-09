@@ -1,0 +1,71 @@
+<!-- admin/shop_dashboard/workstation/menu/add_item.html -->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ja">
+
+<head>
+	<meta charset="UTF-8">
+	<title>商品を追加</title>
+	<link rel="stylesheet" th:href="@{/css/bootstrap.min.css}" />
+	<link rel="stylesheet" th:href="@{/css/admin/style.css}" />
+</head>
+
+<body>
+	<div class="container mt-4" style="max-width: 700px">
+		<h2 class="text-center mb-3">
+			『[[${category.categoryName}]] ＞ [[${subcategory.subcategoryName}]]』 に商品を追加　
+			<span class="text-danger small">※メニューに表示される商品名です</span>
+		</h2>
+
+		<p class="text-muted text-center small">
+			※ メニューは <strong>大分類 → 中分類 → 商品</strong> の順で構成されます。
+		</p>
+
+		<form
+			th:action="@{'/admin/' + ${shopId} + '_dashboard/workstation/menu/' + ${categoryId} + '/' + ${subcategoryId} + '/add'}"
+			method="post">
+			<input type="hidden" name="shopId" th:value="${shopId}" />
+			<input type="hidden" name="itemCategory" th:value="${categoryId}" />
+			<input type="hidden" name="itemSubcategory" th:value="${subcategoryId}" />
+
+			<div class="mb-3">
+				<label for="itemName" class="form-label">商品名</label>
+				<input type="text" id="itemName" name="itemName" class="form-control" required />
+			</div>
+
+			<div class="mb-3">
+				<label for="itemDetail" class="form-label">商品説明</label>
+				<textarea id="itemDetail" name="itemDetail" class="form-control" rows="3"></textarea>
+			</div>
+
+			<div class="mb-3">
+				<label for="price" class="form-label">価格 (円)</label>
+				<input type="number" id="price" name="price" class="form-control" required min="0" />
+			</div>
+
+			<div class="mb-3">
+				<label for="stockQuantity" class="form-label">在庫数（空欄＝無限）</label>
+				<input type="number" id="stockQuantity" name="stockQuantity" class="form-control" min="0" />
+			</div>
+
+			<div class="form-check mb-2">
+				<input class="form-check-input" type="checkbox" id="isVisible" name="isVisible" checked />
+				<label class="form-check-label" for="isVisible">表示する</label>
+			</div>
+
+			<div class="form-check mb-4">
+				<input class="form-check-input" type="checkbox" id="isOrderable" name="isOrderable" checked />
+				<label class="form-check-label" for="isOrderable">注文を受け付ける</label>
+			</div>
+
+			<div class="d-flex justify-content-between">
+				<a th:href="@{'/admin/' + ${shopId} + '_dashboard/workstation/menu/list'}"
+					class="btn btn-outline-secondary">← 戻る</a>
+				<button type="submit" class="btn btn-primary">登録する</button>
+			</div>
+		</form>
+	</div>
+
+	<script th:src="@{/js/bootstrap.bundle.min.js}"></script>
+</body>
+
+</html>

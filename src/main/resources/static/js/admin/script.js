@@ -1,7 +1,4 @@
-// static/js/admin/script.js
-
 const WorkstationApp = (function () {
-  // DOM要素
   const tabContainer = document.getElementById('tab-content-area');
   const clockEl = document.getElementById('clock');
   const messageEl = document.getElementById('system-message');
@@ -9,7 +6,7 @@ const WorkstationApp = (function () {
 
   // ビュー読み込み関数
   function loadTabView(view) {
-	const url = `/admin/${shopId}_dashboard/workstation/${view}/list`;
+    const url = `/admin/${shopId}_dashboard/workstation/${view}/list`;
     fetch(url)
       .then(res => {
         if (!res.ok) throw new Error("読み込み失敗");
@@ -19,6 +16,32 @@ const WorkstationApp = (function () {
         tabContainer.innerHTML = html;
         setActiveTab(view);
         showMessage(`${getTabLabel(view)}を表示中`);
+
+        let scriptPath = null;
+
+        if (view === "menu") scriptPath = "/js/admin/menu_list.js";
+        if (view === "table") scriptPath = "/js/admin/table.js";
+        if (view === "order") scriptPath = "/js/admin/order.js";
+
+        if (scriptPath) {
+          const script = document.createElement("script");
+          script.src = scriptPath;
+          script.defer = true;
+          script.onload = () => {
+            // 動的読み込み後の初期化呼び出し
+            if (view === "menu" && typeof window.initMenuList === "function") {
+              window.initMenuList();
+            }
+            if (view === "table" && typeof window.initTableList === "function") {
+              window.initTableList();
+            }
+            if (view === "order" && typeof window.initOrderList === "function") {
+              window.initOrderList();
+            }
+          };
+          document.body.appendChild(script);
+        }
+
       })
       .catch(err => {
         tabContainer.innerHTML = `<div class="text-danger">ビューの読み込みに失敗しました</div>`;
@@ -27,7 +50,7 @@ const WorkstationApp = (function () {
       });
   }
 
-  // タブアクティブ切替
+  // タブのアクティブ切替
   function setActiveTab(view) {
     document.querySelectorAll('.dashboard-tab-button').forEach(btn => {
       btn.classList.remove('active');
@@ -37,12 +60,12 @@ const WorkstationApp = (function () {
     });
   }
 
-  // タブ名の表示ラベル（任意でカスタム）
+  // タブ名の表示ラベル
   function getTabLabel(view) {
     switch (view) {
-      case 'table_list': return 'テーブル一覧';
-      case 'menu_list': return 'メニュー一覧';
-      case 'order_list': return 'オーダー一覧';
+      case 'table': return 'テーブル一覧';
+      case 'menu': return 'メニュー一覧';
+      case 'order': return 'オーダー一覧';
       default: return '不明なビュー';
     }
   }
@@ -59,7 +82,7 @@ const WorkstationApp = (function () {
     }, 5000);
   }
 
-  // 時計表示（1秒ごと更新）
+  // 時計
   function startClock() {
     if (!clockEl) return;
     const update = () => {
@@ -71,31 +94,39 @@ const WorkstationApp = (function () {
     setInterval(update, 1000);
   }
 
-  // ハッシュ監視
-	function handleHashChange() {
-	  const hash = location.hash.replace('#', '');
-	  const view = hash || 'table'; // デフォルトは table
-	
-	  loadTabView(view); // ← "_list" は不要（既に修正済）
-	}
+  // ハッシュ変更時の処理
+  function handleHashChange() {
+    const hash = location.hash.replace('#', '');
+    const view = hash || 'table';
+    loadTabView(view);
+  }
 
+  // タブボタンにイベント付与（preventDefault）
+  function bindTabEvents() {
+    document.querySelectorAll('.dashboard-tab-button').forEach(btn => {
+      btn.addEventListener('click', e => {
+        e.preventDefault(); // ✅ ページ遷移を防止
+        const view = btn.dataset.view;
+        location.hash = view;
+      });
+    });
+  }
 
   // 初期化
   function init() {
     if (!tabContainer || !shopId) return;
     startClock();
+    bindTabEvents();
     handleHashChange();
     window.addEventListener('hashchange', handleHashChange);
   }
 
-  // 公開API
   return {
     init: init,
     showMessage: showMessage
   };
 })();
 
-// 起動
 window.addEventListener('DOMContentLoaded', () => {
   WorkstationApp.init();
 });

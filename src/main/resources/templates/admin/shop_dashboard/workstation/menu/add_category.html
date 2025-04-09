@@ -1,0 +1,40 @@
+<!-- admin/shop_dashboard/workstation/menu/add_category.html -->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ja">
+
+<head>
+	<meta charset="UTF-8">
+	<title>大分類を追加</title>
+	<link rel="stylesheet" th:href="@{/css/bootstrap.min.css}" />
+	<link rel="stylesheet" th:href="@{/css/admin/style.css}" />
+</head>
+
+<body>
+	<div class="container mt-4" style="max-width: 600px">
+		<h2 class="text-center mb-3">
+			大分類を追加　<span class="text-danger small">※メニューに表示される大分類名です</span>
+		</h2>
+		<p class="text-muted text-center small">
+			※ メニューは <strong>大分類 → 中分類 → 商品</strong> の順で構成されます。
+		</p>
+
+		<form th:action="@{'/admin/' + ${shopId} + '_dashboard/workstation/menu/add'}" method="post">
+			<input type="hidden" name="shopId" th:value="${shopId}" />
+
+			<div class="mb-3">
+				<label for="categoryName" class="form-label">大分類名</label>
+				<input type="text" id="categoryName" name="categoryName" class="form-control" required />
+			</div>
+
+			<div class="d-flex justify-content-between">
+				<a th:href="@{'/admin/' + ${shopId} + '_dashboard/workstation/menu/list'}"
+					class="btn btn-outline-secondary">← 戻る</a>
+				<button type="submit" class="btn btn-primary">登録する</button>
+			</div>
+		</form>
+	</div>
+
+	<script th:src="@{/js/bootstrap.bundle.min.js}"></script>
+</body>
+
+</html>

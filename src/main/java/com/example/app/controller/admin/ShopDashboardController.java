@@ -48,7 +48,29 @@ public class ShopDashboardController {
 		model.addAttribute("shop", shop);
 		return "admin/shop_dashboard/index";
 	}
+	
+	@GetMapping("/admin/{shopId}_dashboard/workstation")
+	public String showWorkstation(
+			@PathVariable("shopId") int shopId,
+			HttpSession session,
+			Model model) {
 
+		Employee loginUser = (Employee) session.getAttribute("loginUser");
+
+		Shop shop = shopService.findById(shopId);
+		model.addAttribute("shop", shop);
+
+		if (loginUser == null) {
+			model.addAttribute("message", "セッションが切れています。ログインしなおしてください。");
+			model.addAttribute("sessionExpired", true); // ← JSやViewで切り替えたい場合にも使える
+		} else {
+			model.addAttribute("message", shop.getShopName() + " のワークステーションを表示中");
+			model.addAttribute("loginUser", loginUser);
+		}
+
+		return "admin/shop_dashboard/workstation/index";
+	}
+	
 	@GetMapping("/admin/{shopId}_dashboard/layout")
 	public String showLayout(@PathVariable("shopId") int shopId, Model model) {
 	    List<LayoutItem> layoutItems = shopLayoutMapper.findByShopId(shopId);

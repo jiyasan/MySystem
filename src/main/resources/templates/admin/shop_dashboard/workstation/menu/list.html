@@ -1,10 +1,121 @@
+<!-- admin/shop_dashboard/workstation/menu/list.html -->
 <!DOCTYPE html>
-<html lang="ja" xmlns:th="http://www.thymeleaf.org">
-<head>
-<meta charset="UTF-8">
-<title>Insert title here</title>
-</head>
-<body>
+<html xmlns:th="http://www.thymeleaf.org" lang="ja">
 
+<head>
+	<meta charset="UTF-8">
+	<title>メニュー一覧</title>
+	<link rel="stylesheet" th:href="@{/css/bootstrap.min.css}" />
+	<link rel="stylesheet" th:href="@{/css/admin/style.css}" />
+</head>
+
+<body>
+	<div class="container mt-3">
+
+		<!-- トップ操作ボタン群 -->
+		<div class="d-flex justify-content-between align-items-center mb-4">
+			<button id="toggleSoldOut" class="btn btn-outline-primary btn-sm">売り切れ商品を表示</button>
+			<a th:href="@{'/admin/' + ${shopId} + '_dashboard/workstation/menu/add'}" class="btn btn-success btn-sm">＋
+				メニューを追加</a>
+		</div>
+
+		<!-- 初期状態（大分類が空のとき） -->
+		<div th:if="${categoryList == null or #lists.isEmpty(categoryList)}" class="alert alert-info text-center">
+			🎉 まだメニューが登録されていません！<br>
+			まずは <strong>大分類</strong> を追加してみましょう。<br>
+			※ メニューの構成は <strong>大分類 → 中分類 → 商品</strong> となります。
+		</div>
+
+		<!-- 大分類一覧 -->
+		<div th:each="category : ${categoryList}" class="mb-3">
+			<div class="d-flex justify-content-between align-items-center">
+				<button class="btn btn-secondary w-100 text-start category-toggle"
+					th:data-category-id="${category.categoryId}">
+					[[${category.categoryName}]]（ID:[[${category.categoryId}]])
+				</button>
+				<a th:href="@{'/admin/' + ${shopId} + '_dashboard/workstation/menu/' + ${category.categoryId} + '/edit'}"
+					class="btn btn-outline-dark btn-sm ms-2">編集</a>
+			</div>
+
+			<!-- 中分類一覧（初期非表示） -->
+			<div th:id="'category-' + ${category.categoryId}" class="subcategory-area mt-2 ps-3" style="display: none;">
+
+				<!-- 中分類が空の場合のメッセージ -->
+				<p th:if="${subcategoryMap[category.categoryId] == null}">
+					『[[${category.categoryName}]]』 に中分類を追加しましょう。<br>
+					※ メニューは <strong>大分類 → 中分類 → 商品</strong> の順で構成されます。
+				</p>
+
+				<div th:each="sub : ${subcategoryList}" th:if="${sub.categoryId} == ${category.categoryId}"
+					class="mb-3">
+					<div class="d-flex justify-content-between align-items-center">
+						<strong>[[${sub.subcategoryName}]]</strong>
+						<a th:href="@{'/admin/' + ${shopId} + '_dashboard/workstation/menu/' + ${category.categoryId} + '/' + ${sub.subcategoryId} + '/edit'}"
+							class="btn btn-outline-secondary btn-sm">編集</a>
+					</div>
+
+					<!-- 商品一覧 -->
+					<table class="table table-sm table-bordered mt-2">
+						<thead>
+							<tr>
+								<th>ID</th>
+								<th>商品名</th>
+								<th>価格</th>
+								<th>表示</th>
+								<th>注文可</th>
+								<th>操作</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr th:each="item : ${itemList}"
+								th:if="(${item.itemCategory} == ${category.categoryId}) and (${item.itemSubcategory} == ${sub.subcategoryId})">
+								<td>[[${item.menuItemId}]]</td>
+								<td>[[${item.itemName}]]</td>
+								<td>[[${item.price}]]</td>
+								<td><input type="checkbox" th:checked="${item.visible}" /></td>
+								<td><input type="checkbox" th:checked="${item.orderable}" /></td>
+								<td>
+									<a th:href="@{'/admin/' + ${shopId} + '_dashboard/workstation/menu/' + ${category.categoryId} + '/' + ${sub.subcategoryId} + '/' + ${item.menuItemId}}"
+										class="btn btn-outline-primary btn-sm">詳細</a>
+									<a th:href="@{'/admin/' + ${shopId} + '_dashboard/workstation/menu/' + ${category.categoryId} + '/' + ${sub.subcategoryId} + '/' + ${item.menuItemId} + '/edit'}"
+										class="btn btn-outline-dark btn-sm">編集</a>
+								</td>
+							</tr>
+							<tr th:if="${itemMap[category.categoryId + '-' + sub.subcategoryId] == null}">
+								<td colspan="6" class="text-muted text-center">
+									『[[${category.categoryName}]] ＞ [[${sub.subcategoryName}]]』 に商品を追加しましょう。<br>
+									※ メニューは <strong>大分類 → 中分類 → 商品</strong> の順で構成されます。
+								</td>
+							</tr>
+						</tbody>
+					</table>
+
+					<!-- 商品追加ボタン -->
+					<a th:href="@{'/admin/' + ${shopId} + '_dashboard/workstation/menu/' + ${category.categoryId} + '/' + ${sub.subcategoryId} + '/add'}"
+						class="btn btn-sm btn-outline-success">＋ 商品追加</a>
+				</div>
+
+				<!-- 中分類追加ボタン -->
+				<a th:href="@{'/admin/' + ${shopId} + '_dashboard/workstation/menu/' + ${category.categoryId} + '/add'}"
+					class="btn btn-sm btn-outline-secondary mt-3">＋ 中分類追加</a>
+			</div>
+		</div>
+
+		<!-- 大分類追加ボタン -->
+		<div class="text-center mt-4">
+			<a th:href="@{'/admin/' + ${shopId} + '_dashboard/workstation/menu/add'}"
+				class="btn btn-outline-dark btn-sm">＋ 大分類を追加</a>
+		</div>
+	</div>
+
+	<script th:src="@{/js/bootstrap.bundle.min.js}"></script>
+	<!-- admin/shop_dashboard/workstation/menu/list.html の末尾に追加 -->
+	<script th:src="@{/js/admin/menu_list.js}" defer></script>
+	<script>
+		if (typeof window.initMenuList === 'function') {
+			window.initMenuList();
+		}
+	</script>
 </body>
+
 </html>

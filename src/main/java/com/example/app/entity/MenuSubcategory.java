@@ -4,7 +4,9 @@ import lombok.Data;
 
 @Data
 public class MenuSubcategory {
-    private Integer subcategoryId;       // メニュー中分類ID
-    private String subcategoryName;      // メニュー中分類名
-    private Integer shopId;          // 所属店舗ID（共通は0）
+    private Integer subcategoryId;
+    private Integer categoryId; // ←これが必要！
+    private String subcategoryName;
+    private Integer shopId;
+
 }

@@ -12,16 +12,25 @@ import com.example.app.entity.MenuSubcategory;
 @Mapper
 public interface MenuMapper {
 
-	// --- カテゴリー ---
-	List<MenuCategory> findCategoriesByShopId(Integer shopId);
+    // --- カテゴリー ---
+    List<MenuCategory> findCategoriesByShopId(Integer shopId);
+    MenuCategory findCategoryById(Integer categoryId);
+    int insertCategory(MenuCategory category);
+    int updateCategory(MenuCategory category);
 
-	// --- サブカテゴリー ---
-	List<MenuSubcategory> findSubcategoriesByCategoryIdAndShopId(@Param("categoryId") Integer categoryId, @Param("shopId") Integer shopId);
-	List<MenuSubcategory> findSubcategoriesByShopId(Integer shopId);
+    // --- サブカテゴリー ---
+    List<MenuSubcategory> findSubcategoriesByShopId(Integer shopId);
+    List<MenuSubcategory> findSubcategoriesByCategoryIdAndShopId(@Param("categoryId") Integer categoryId,
+                                                                 @Param("shopId") Integer shopId);
+    MenuSubcategory findSubcategoryById(Integer subcategoryId);
+    int insertSubcategory(MenuSubcategory subcategory);
+    int updateSubcategory(MenuSubcategory subcategory);
 
-	// --- メニュー商品 ---
-	List<MenuItem> findItemsByShopId(Integer shopId);
-
+    // --- メニュー商品 ---
+    List<MenuItem> findItemsByShopId(Integer shopId);
+    List<MenuItem> findItemsBySubcategoryId(Integer subcategoryId);
+    MenuItem findMenuItemById(Integer itemId);
     int insertMenuItem(MenuItem item);
+    int updateMenuItem(MenuItem item);
 
 }
