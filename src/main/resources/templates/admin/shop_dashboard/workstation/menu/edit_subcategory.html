@@ -1,10 +1,38 @@
+<!-- admin/shop_dashboard/workstation/menu/edit_subcategory.html -->
 <!DOCTYPE html>
-<html lang="ja" xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" lang="ja">
 <head>
-<meta charset="UTF-8">
-<title>Insert title here</title>
+	<meta charset="UTF-8">
+	<title>中分類を編集</title>
+	<link rel="stylesheet" th:href="@{/css/bootstrap.min.css}" />
+	<link rel="stylesheet" th:href="@{/css/admin/style.css}" />
 </head>
 <body>
+	<div class="container mt-1" style="max-width: 600px">
+		<h3 class="text-center mb-3">
+			中分類を編集　<span class="text-danger small">※変更後の名前がメニューに表示されます</span>
+		</h2>
+		<p class="text-muted text-center small">
+			※ メニューは <strong>大分類 → 中分類 → 商品</strong> の順で構成されます。
+		</p>
 
+		<form th:action="@{'/admin/' + ${shopId} + '_dashboard/workstation/menu/' + ${categoryId} + '/' + ${subcategoryId} + '/edit'}" method="post">
+			<input type="hidden" name="shopId" th:value="${shopId}" />
+
+			<div class="mb-3">
+				<label for="subcategoryName" class="form-label">中分類名</label>
+				<input type="text" id="subcategoryName" name="subcategoryName"
+					class="form-control" th:value="${subcategory.subcategoryName}" required />
+			</div>
+
+			<div class="d-flex justify-content-between">
+				<a th:href="@{'/admin/' + ${shopId} + '_dashboard/workstation/menu/list'}"
+					class="btn btn-outline-secondary">← 戻る</a>
+				<button type="submit" class="btn btn-primary">保存する</button>
+			</div>
+		</form>
+	</div>
+
+	<script th:src="@{/js/bootstrap.bundle.min.js}"></script>
 </body>
 </html>

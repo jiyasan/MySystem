@@ -4,8 +4,36 @@ const WorkstationApp = (function () {
   const messageEl = document.getElementById('system-message');
   const shopId = document.body.dataset.shopId;
 
-  // ビュー読み込み関数
-  function loadTabView(view) {
+  const tabCache = {
+    menu: { currentHTML: null, listHTML: null },
+    table: { currentHTML: null, listHTML: null },
+    order: { currentHTML: null, listHTML: null }
+  };
+  let currentView = null;
+
+  function loadTabView(view, forceList = false) {
+    // 再クリック時に listHTML を使ってリセット
+    if (view === currentView && !forceList && tabCache[view]?.listHTML) {
+      tabContainer.innerHTML = tabCache[view].listHTML;
+      tabCache[view].currentHTML = tabCache[view].listHTML;
+      setActiveTab(view);
+      showMessage(`${getTabLabel(view)}を表示中`);
+      currentView = view;
+      runTabInit(view); // 🔁 初期化関数を必ず呼ぶ
+      return;
+    }
+
+    // 通常キャッシュから復元
+    if (tabCache[view]?.currentHTML && !forceList) {
+      tabContainer.innerHTML = tabCache[view].currentHTML;
+      setActiveTab(view);
+      showMessage(`${getTabLabel(view)}を表示中`);
+      currentView = view;
+      runTabInit(view); // 🔁 初期化関数を必ず呼ぶ
+      return;
+    }
+
+    // サーバーから読み込み
     const url = `/admin/${shopId}_dashboard/workstation/${view}/list`;
     fetch(url)
       .then(res => {
@@ -14,11 +42,16 @@ const WorkstationApp = (function () {
       })
       .then(html => {
         tabContainer.innerHTML = html;
+        tabCache[view] = {
+          currentHTML: html,
+          listHTML: html
+        };
         setActiveTab(view);
         showMessage(`${getTabLabel(view)}を表示中`);
+        currentView = view;
 
+        // JSファイル動的読み込み（初回のみ）
         let scriptPath = null;
-
         if (view === "menu") scriptPath = "/js/admin/menu_list.js";
         if (view === "table") scriptPath = "/js/admin/table.js";
         if (view === "order") scriptPath = "/js/admin/order.js";
@@ -27,21 +60,11 @@ const WorkstationApp = (function () {
           const script = document.createElement("script");
           script.src = scriptPath;
           script.defer = true;
-          script.onload = () => {
-            // 動的読み込み後の初期化呼び出し
-            if (view === "menu" && typeof window.initMenuList === "function") {
-              window.initMenuList();
-            }
-            if (view === "table" && typeof window.initTableList === "function") {
-              window.initTableList();
-            }
-            if (view === "order" && typeof window.initOrderList === "function") {
-              window.initOrderList();
-            }
-          };
+          script.onload = () => runTabInit(view); // ✅ 読み込み後に初期化
           document.body.appendChild(script);
+        } else {
+          runTabInit(view); // ✅ scriptPathなしでも実行（保険）
         }
-
       })
       .catch(err => {
         tabContainer.innerHTML = `<div class="text-danger">ビューの読み込みに失敗しました</div>`;
@@ -50,7 +73,18 @@ const WorkstationApp = (function () {
       });
   }
 
-  // タブのアクティブ切替
+  function runTabInit(view) {
+    if (view === "menu" && typeof window.initMenuList === "function") {
+      window.initMenuList();
+    }
+    if (view === "table" && typeof window.initTableList === "function") {
+      window.initTableList();
+    }
+    if (view === "order" && typeof window.initOrderList === "function") {
+      window.initOrderList();
+    }
+  }
+
   function setActiveTab(view) {
     document.querySelectorAll('.dashboard-tab-button').forEach(btn => {
       btn.classList.remove('active');
@@ -60,7 +94,6 @@ const WorkstationApp = (function () {
     });
   }
 
-  // タブ名の表示ラベル
   function getTabLabel(view) {
     switch (view) {
       case 'table': return 'テーブル一覧';
@@ -70,19 +103,16 @@ const WorkstationApp = (function () {
     }
   }
 
-  // メッセージ表示
   function showMessage(text) {
     if (!messageEl) return;
     messageEl.textContent = text;
     messageEl.classList.add('visible');
-
     setTimeout(() => {
       messageEl.classList.remove('visible');
       messageEl.textContent = '';
     }, 5000);
   }
 
-  // 時計
   function startClock() {
     if (!clockEl) return;
     const update = () => {
@@ -94,25 +124,27 @@ const WorkstationApp = (function () {
     setInterval(update, 1000);
   }
 
-  // ハッシュ変更時の処理
   function handleHashChange() {
-    const hash = location.hash.replace('#', '');
-    const view = hash || 'table';
-    loadTabView(view);
+    const hash = location.hash.replace('#', '') || 'table';
+    loadTabView(hash);
   }
 
-  // タブボタンにイベント付与（preventDefault）
   function bindTabEvents() {
     document.querySelectorAll('.dashboard-tab-button').forEach(btn => {
       btn.addEventListener('click', e => {
-        e.preventDefault(); // ✅ ページ遷移を防止
+        e.preventDefault();
         const view = btn.dataset.view;
-        location.hash = view;
+
+        // 再クリックで一覧リセット
+        if (view === currentView) {
+          loadTabView(view, true);
+        } else {
+          location.hash = view;
+        }
       });
     });
   }
 
-  // 初期化
   function init() {
     if (!tabContainer || !shopId) return;
     startClock();

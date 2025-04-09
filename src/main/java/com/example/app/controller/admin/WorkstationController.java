@@ -82,17 +82,18 @@ public class WorkstationController {
 		return "admin/shop_dashboard/workstation/menu/detail";
 	}
 
-	// 大分類編集画面
+	// 大分類編集画面表示
 	@GetMapping("/menu/{categoryId}/edit")
 	public String showEditCategory(@PathVariable("shopId") int shopId,
 			@PathVariable("categoryId") int categoryId,
 			Model model) {
 		model.addAttribute("shopId", shopId);
 		model.addAttribute("categoryId", categoryId);
+		model.addAttribute("category", menuMapper.findCategoryById(categoryId));
 		return "admin/shop_dashboard/workstation/menu/edit_category";
 	}
 
-	// 中分類編集画面
+	// 中分類編集画面表示
 	@GetMapping("/menu/{categoryId}/{subcategoryId}/edit")
 	public String showEditSubcategory(@PathVariable("shopId") int shopId,
 			@PathVariable("categoryId") int categoryId,
@@ -101,10 +102,12 @@ public class WorkstationController {
 		model.addAttribute("shopId", shopId);
 		model.addAttribute("categoryId", categoryId);
 		model.addAttribute("subcategoryId", subcategoryId);
+		model.addAttribute("subcategory", menuMapper.findSubcategoryById(subcategoryId));
+
 		return "admin/shop_dashboard/workstation/menu/edit_subcategory";
 	}
 
-	// 商品編集画面
+	// 商品編集画面表示
 	@GetMapping("/menu/{categoryId}/{subcategoryId}/{itemId}/edit")
 	public String showEditItem(@PathVariable("shopId") int shopId,
 			@PathVariable("categoryId") int categoryId,
@@ -118,24 +121,28 @@ public class WorkstationController {
 		return "admin/shop_dashboard/workstation/menu/edit_item";
 	}
 
-	// 大分類追加
+	// 大分類追加画面表示
 	@GetMapping("/menu/add")
 	public String showAddCategory(@PathVariable("shopId") int shopId, Model model) {
 		model.addAttribute("shopId", shopId);
 		return "admin/shop_dashboard/workstation/menu/add_category";
 	}
 
-	// 中分類追加
+	// 中分類追加画面表示
 	@GetMapping("/menu/{categoryId}/add")
 	public String showAddSubcategory(@PathVariable("shopId") int shopId,
 			@PathVariable("categoryId") int categoryId,
 			Model model) {
 		model.addAttribute("shopId", shopId);
 		model.addAttribute("categoryId", categoryId);
+		
+	    MenuCategory category = menuMapper.findCategoryById(categoryId);
+	    model.addAttribute("category", category);
+	    
 		return "admin/shop_dashboard/workstation/menu/add_subcategory";
 	}
 
-	// 商品追加
+	// 商品追加画面表示
 	@GetMapping("/menu/{categoryId}/{subcategoryId}/add")
 	public String showAddItem(@PathVariable("shopId") int shopId,
 			@PathVariable("categoryId") int categoryId,
@@ -160,6 +167,8 @@ public class WorkstationController {
 		return "admin/shop_dashboard/workstation/order/list";
 	}
 
+	//ここからPOST処理
+	
 	// 大分類追加処理
 	@PostMapping("/menu/add")
 	public String addCategory(@RequestParam("shopId") int shopId,
@@ -211,4 +220,44 @@ public class WorkstationController {
 		return "redirect:/admin/" + shopId + "_dashboard/workstation/menu/list";
 	}
 
+	
+	// 大分類編集処理
+	@PostMapping("/menu/{categoryId}/edit")
+	public String updateCategory(
+	        @PathVariable("shopId") int shopId,
+	        @PathVariable("categoryId") int categoryId,
+	        @RequestParam("categoryName") String categoryName) {
+
+	    MenuCategory category = new MenuCategory();
+	    category.setCategoryId(categoryId);
+	    category.setCategoryName(categoryName);
+
+	    menuMapper.updateCategory(category);
+	    return "redirect:/admin/" + shopId + "_dashboard/workstation/menu/list";
+	}
+
+	// 中分類編集処理
+	@PostMapping("/menu/{categoryId}/{subcategoryId}/edit")
+	public String updateSubcategory(
+	        @PathVariable("shopId") int shopId,
+	        @PathVariable("categoryId") int categoryId,
+	        @PathVariable("subcategoryId") int subcategoryId,
+	        @RequestParam("subcategoryName") String subcategoryName) {
+
+	    MenuSubcategory subcategory = new MenuSubcategory();
+	    subcategory.setSubcategoryId(subcategoryId);
+	    subcategory.setSubcategoryName(subcategoryName);
+
+	    menuMapper.updateSubcategory(subcategory);
+	    return "redirect:/admin/" + shopId + "_dashboard/workstation/menu/list";
+	}
+
+	
+	
+	
+	
+	
+	
+	
+	
 }
