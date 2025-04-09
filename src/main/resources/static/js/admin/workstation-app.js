@@ -14,7 +14,6 @@ const WorkstationApp = (function() {
 	};
 	let currentView = null;
 
-	// ✅ ← ここに追加（WorkstationApp 内）
 	function bindTabLinks() {
 		tabContainer.addEventListener('click', e => {
 			const target = e.target.closest('[data-tab-link]');
