@@ -1,4 +1,3 @@
-<!-- admin/shop_dashboard/workstation/menu/list.html -->
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="ja">
 
@@ -16,15 +15,14 @@
 		<div class="d-flex justify-content-between align-items-center mb-4">
 			<button id="toggleSoldOut" class="btn btn-outline-primary btn-sm">売り切れ商品を表示</button>
 			<a th:href="@{'/admin/' + ${shopId} + '_dashboard/workstation/menu/add'}" data-tab-link data-view="menu"
-				class="btn btn-success btn-sm">
-				＋ メニューを追加</a>
+				class="btn btn-success btn-sm">＋ メニューを追加</a>
 		</div>
 
-		<!-- 初期状態（大分類が空のとき） -->
+		<!-- 大分類が空のとき -->
 		<div th:if="${categoryList == null or #lists.isEmpty(categoryList)}" class="alert alert-info text-center">
 			🎉 まだメニューが登録されていません！<br>
 			まずは <strong>大分類</strong> を追加してみましょう。<br>
-			※ メニューの構成は <strong>大分類 → 中分類 → 商品</strong> となります。
+			※ メニューの構成は <strong>大分類 → 中分類 → 商品</strong> です。
 		</div>
 
 		<!-- 大分類一覧 -->
@@ -34,38 +32,33 @@
 					class="btn btn-primary w-100 text-start category-toggle d-flex justify-content-between align-items-center"
 					th:data-category-id="${category.categoryId}">
 					<span>
-						<span class="toggle-icon">▶</span>　[[${category.categoryName}]]（ID:[[${category.categoryId}]])</span>
+						<span class="toggle-icon">▶</span> [[${category.categoryName}]]（ID:[[${category.categoryId}]])
+					</span>
 					<a th:href="@{'/admin/' + ${shopId} + '_dashboard/workstation/menu/' + ${category.categoryId} + '/edit'}"
-						class="btn btn-sm btn-light ms-2">編集</a>
+						data-tab-link data-view="menu" class="btn btn-sm btn-light ms-2">編集</a>
 				</button>
-
 			</div>
 
-			<!-- 中分類一覧（初期非表示） -->
+			<!-- 中分類一覧 -->
 			<div th:id="'category-' + ${category.categoryId}" class="subcategory-area mt-2 ps-3" style="display: none;">
 
-				<!-- 中分類が空の場合のメッセージ -->
 				<p th:if="${subcategoryMap[category.categoryId] == null}">
-					『[[${category.categoryName}]]』 に中分類を追加しましょう。<br>
-					※ メニューは <strong>大分類 → 中分類 → 商品</strong> の順で構成されます。
+					『[[${category.categoryName}]]』 に中分類を追加しましょう。
 				</p>
 
 				<div th:each="sub : ${subcategoryList}" th:if="${sub.categoryId} == ${category.categoryId}"
 					class="mb-3">
-					<!-- 中分類トグル（青系・目立つ） -->
+
 					<button
 						class="btn btn-info w-100 text-start subcategory-toggle d-flex justify-content-between align-items-center"
 						th:data-subcategory-id="${sub.subcategoryId}">
-						<span><span class="toggle-icon">▶</span>　[[${sub.subcategoryName}]]</span>
+						<span><span class="toggle-icon">▶</span> [[${sub.subcategoryName}]]</span>
 						<a th:href="@{'/admin/' + ${shopId} + '_dashboard/workstation/menu/' + ${category.categoryId} + '/' + ${sub.subcategoryId} + '/edit'}"
-							class="btn btn-sm btn-light ms-2" onclick="event.stopPropagation()">編集</a>
+							class="btn btn-sm btn-light ms-2" data-tab-link data-view="menu">編集</a>
 					</button>
-
 
 					<div th:id="'subcategory-' + ${sub.subcategoryId}" class="subcategory-content mt-2"
 						style="display: none;">
-						<!-- 商品テーブル・商品追加ボタンをここにまとめる -->
-
 						<!-- 商品一覧 -->
 						<table class="table table-sm table-bordered mt-2">
 							<thead>
@@ -84,51 +77,49 @@
 									<td>[[${item.menuItemId}]]</td>
 									<td>[[${item.itemName}]]</td>
 									<td>[[${item.price}]]</td>
-									<td><input type="checkbox" th:checked="${item.isVisible}" /></td>
-									<td><input type="checkbox" th:checked="${item.isOrderable}" /></td>
+									<td
+										th:utext="${item.IsVisible} ? '<span class=\'text-success\'>○</span>' : '<span class=\'text-danger\'>×</span>'">
+									</td>
+									<td
+										th:utext="${item.IsOrderable} ? '<span class=\'text-success\'>○</span>' : '<span class=\'text-danger\'>×</span>'">
+									</td>
 									<td>
 										<a th:href="@{'/admin/' + ${shopId} + '_dashboard/workstation/menu/' + ${category.categoryId} + '/' + ${sub.subcategoryId} + '/' + ${item.menuItemId}}"
-											class="btn btn-outline-primary btn-sm">詳細</a>
+											class="btn btn-outline-primary btn-sm" data-tab-link data-view="menu">詳細</a>
 										<a th:href="@{'/admin/' + ${shopId} + '_dashboard/workstation/menu/' + ${category.categoryId} + '/' + ${sub.subcategoryId} + '/' + ${item.menuItemId} + '/edit'}"
-											class="btn btn-outline-dark btn-sm">編集</a>
+											class="btn btn-outline-dark btn-sm" data-tab-link data-view="menu">編集</a>
 									</td>
 								</tr>
 								<tr th:if="${itemMap[category.categoryId + '-' + sub.subcategoryId] == null}">
 									<td colspan="6" class="text-muted text-center">
-										『[[${category.categoryName}]] ＞ [[${sub.subcategoryName}]]』 に商品を追加しましょう。<br>
-										※ メニューは <strong>大分類 → 中分類 → 商品</strong> の順で構成されます。
+										『[[${category.categoryName}]] ＞ [[${sub.subcategoryName}]]』 に商品を追加しましょう。
 									</td>
 								</tr>
 							</tbody>
 						</table>
 
-						<!-- 商品追加ボタン -->
+						<!-- 商品追加 -->
 						<a th:href="@{'/admin/' + ${shopId} + '_dashboard/workstation/menu/' + ${category.categoryId} + '/' + ${sub.subcategoryId} + '/add'}"
-							class="btn btn-sm w-100 btn-outline-success">＋ 商品追加</a>
+							class="btn btn-sm w-100 btn-outline-success" data-tab-link data-view="menu">＋ 商品追加</a>
 					</div>
 				</div>
-				<!-- 中分類追加ボタン -->
+
+				<!-- 中分類追加 -->
 				<a th:href="@{'/admin/' + ${shopId} + '_dashboard/workstation/menu/' + ${category.categoryId} + '/add'}"
-					class="btn btn-info w-100 text-start subcategory-toggle d-flex justify-content-between align-items-center">＋
-					中分類追加</a>
+					class="btn btn-info w-100 text-start subcategory-toggle d-flex justify-content-between align-items-center"
+					data-tab-link data-view="menu">＋ 中分類追加</a>
 			</div>
 		</div>
 
-		<!-- 大分類追加ボタン -->
+		<!-- 大分類追加 -->
 		<div class="text-center">
 			<a th:href="@{'/admin/' + ${shopId} + '_dashboard/workstation/menu/add'}"
-				class="btn btn-primary w-100 text-start category-toggle d-flex justify-content-between align-items-center">＋
-				大分類を追加</a>
+				class="btn btn-primary w-100 text-start category-toggle d-flex justify-content-between align-items-center"
+				data-tab-link data-view="menu">＋ 大分類を追加</a>
 		</div>
 	</div>
 
 	<script th:src="@{/js/bootstrap.bundle.min.js}"></script>
-	<script th:src="@{/js/admin/menu_list.js}" defer></script>
-	<script>
-		if (typeof window.initMenuList === 'function') {
-			window.initMenuList();
-		}
-	</script>
 </body>
 
 </html>

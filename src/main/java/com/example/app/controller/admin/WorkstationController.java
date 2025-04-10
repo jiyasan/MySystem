@@ -1,7 +1,11 @@
 package com.example.app.controller.admin;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +16,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.example.app.dto.LayoutItem;
 import com.example.app.entity.MenuCategory;
@@ -135,10 +141,10 @@ public class WorkstationController {
 			Model model) {
 		model.addAttribute("shopId", shopId);
 		model.addAttribute("categoryId", categoryId);
-		
-	    MenuCategory category = menuMapper.findCategoryById(categoryId);
-	    model.addAttribute("category", category);
-	    
+
+		MenuCategory category = menuMapper.findCategoryById(categoryId);
+		model.addAttribute("category", category);
+
 		return "admin/shop_dashboard/workstation/menu/add_subcategory";
 	}
 
@@ -168,17 +174,33 @@ public class WorkstationController {
 	}
 
 	//ここからPOST処理
-	
+
 	// 大分類追加処理
 	@PostMapping("/menu/add")
-	public String addCategory(@RequestParam("shopId") int shopId,
-			@RequestParam("categoryName") String categoryName) {
-		MenuCategory category = new MenuCategory();
-		category.setShopId(shopId);
-		category.setCategoryName(categoryName);
-		menuMapper.insertCategory(category);
-		return "redirect:/admin/" + shopId + "_dashboard/workstation/menu/list";
+
+	@ResponseBody
+	public Map<String, Object> addCategory(@RequestParam("shopId") int shopId,
+	                                       @RequestParam("categoryName") String categoryName) {
+	    Map<String, Object> response = new HashMap<>();
+	    try {
+	        MenuCategory category = new MenuCategory();
+	        category.setShopId(shopId);
+	        category.setCategoryName(categoryName);
+	        menuMapper.insertCategory(category);
+
+	        response.put("success", true);
+	        response.put("message", "大分類を追加しました");
+	        response.put("redirectUrl", "/admin/" + shopId + "_dashboard/workstation/menu/list"); // メニューリストのURL
+
+	        return response;
+
+	    } catch (Exception e) {
+	        response.put("success", false);
+	        response.put("message", "エラー: " + e.getMessage());
+	        return response;
+	    }
 	}
+
 
 	// 中分類追加処理
 	@PostMapping("/menu/{categoryId}/add")
@@ -195,69 +217,94 @@ public class WorkstationController {
 
 	// 商品追加処理
 	@PostMapping("/menu/{categoryId}/{subcategoryId}/add")
-	public String addMenuItem(@PathVariable("shopId") int shopId,
+	public String addMenuItem(
+			@PathVariable("shopId") int shopId,
 			@PathVariable("categoryId") int categoryId,
 			@PathVariable("subcategoryId") int subcategoryId,
 			@RequestParam("itemName") String itemName,
 			@RequestParam("itemDetail") String itemDetail,
-			@RequestParam("price") Integer price,
+			@RequestParam("price") int price,
 			@RequestParam(name = "stockQuantity", required = false) Integer stockQuantity,
 			@RequestParam(name = "isVisible", defaultValue = "false") boolean isVisible,
-			@RequestParam(name = "isOrderable", defaultValue = "false") boolean isOrderable) {
+			@RequestParam(name = "isOrderable", defaultValue = "false") boolean isOrderable,
+			@RequestParam(name = "itemImage", required = false) MultipartFile imageFile,
+			@RequestParam(name = "selectedImageName", required = false) String selectedImageName,
+			Model model) {
+		String fileName = null;
 
-		MenuItem item = new MenuItem();
-		item.setShopId(shopId);
-		item.setItemCategory(categoryId);
-		item.setItemSubcategory(subcategoryId);
-		item.setItemName(itemName);
-		item.setItemDetail(itemDetail);
-		item.setPrice(price);
-		item.setStockQuantity(stockQuantity);
-		item.setIsVisible(isVisible);
-		item.setIsOrderable(isOrderable);
+		try {
+			// 画像アップロードを優先
+			if (imageFile != null && !imageFile.isEmpty()) {
+				String originalName = imageFile.getOriginalFilename();
+				String extension = originalName.substring(originalName.lastIndexOf("."));
+				fileName = UUID.randomUUID() + extension;
 
-		menuMapper.insertMenuItem(item);
-		return "redirect:/admin/" + shopId + "_dashboard/workstation/menu/list";
+				File uploadDir = new File("uploads/menu/" + shopId);
+				if (!uploadDir.exists())
+					uploadDir.mkdirs();
+
+				File dest = new File(uploadDir, fileName);
+				imageFile.transferTo(dest);
+			} else if (selectedImageName != null && !selectedImageName.isEmpty()) {
+				fileName = selectedImageName;
+			}
+
+			// メニューエンティティの作成
+			MenuItem item = new MenuItem();
+			item.setShopId(shopId);
+			item.setItemCategory(categoryId);
+			item.setItemSubcategory(subcategoryId);
+			item.setItemName(itemName);
+			item.setItemDetail(itemDetail);
+			item.setPrice(price);
+			item.setStockQuantity(stockQuantity);
+			item.setItemImage(fileName); // 画像ファイル名のみ（null可）
+			item.setIsVisible(isVisible);
+			item.setIsOrderable(isOrderable);
+
+			menuMapper.insertMenuItem(item); // Mapper直接呼び出し（現構成）
+
+			return "redirect:/admin/" + shopId + "_dashboard/workstation/menu/list";
+
+		} catch (IOException e) {
+			model.addAttribute("errorMessage", "画像の保存に失敗しました");
+			model.addAttribute("shopId", shopId);
+			model.addAttribute("categoryId", categoryId);
+			model.addAttribute("subcategoryId", subcategoryId);
+			// 再表示に必要なリスト（imageList等）も再セットする
+			return "admin/shop_dashboard/workstation/menu/add_item";
+		}
 	}
 
-	
 	// 大分類編集処理
 	@PostMapping("/menu/{categoryId}/edit")
 	public String updateCategory(
-	        @PathVariable("shopId") int shopId,
-	        @PathVariable("categoryId") int categoryId,
-	        @RequestParam("categoryName") String categoryName) {
+			@PathVariable("shopId") int shopId,
+			@PathVariable("categoryId") int categoryId,
+			@RequestParam("categoryName") String categoryName) {
 
-	    MenuCategory category = new MenuCategory();
-	    category.setCategoryId(categoryId);
-	    category.setCategoryName(categoryName);
+		MenuCategory category = new MenuCategory();
+		category.setCategoryId(categoryId);
+		category.setCategoryName(categoryName);
 
-	    menuMapper.updateCategory(category);
-	    return "redirect:/admin/" + shopId + "_dashboard/workstation/menu/list";
+		menuMapper.updateCategory(category);
+		return "redirect:/admin/" + shopId + "_dashboard/workstation/menu/list";
 	}
 
 	// 中分類編集処理
 	@PostMapping("/menu/{categoryId}/{subcategoryId}/edit")
 	public String updateSubcategory(
-	        @PathVariable("shopId") int shopId,
-	        @PathVariable("categoryId") int categoryId,
-	        @PathVariable("subcategoryId") int subcategoryId,
-	        @RequestParam("subcategoryName") String subcategoryName) {
+			@PathVariable("shopId") int shopId,
+			@PathVariable("categoryId") int categoryId,
+			@PathVariable("subcategoryId") int subcategoryId,
+			@RequestParam("subcategoryName") String subcategoryName) {
 
-	    MenuSubcategory subcategory = new MenuSubcategory();
-	    subcategory.setSubcategoryId(subcategoryId);
-	    subcategory.setSubcategoryName(subcategoryName);
+		MenuSubcategory subcategory = new MenuSubcategory();
+		subcategory.setSubcategoryId(subcategoryId);
+		subcategory.setSubcategoryName(subcategoryName);
 
-	    menuMapper.updateSubcategory(subcategory);
-	    return "redirect:/admin/" + shopId + "_dashboard/workstation/menu/list";
+		menuMapper.updateSubcategory(subcategory);
+		return "redirect:/admin/" + shopId + "_dashboard/workstation/menu/list";
 	}
 
-	
-	
-	
-	
-	
-	
-	
-	
 }

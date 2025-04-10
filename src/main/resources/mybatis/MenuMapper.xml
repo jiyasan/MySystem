@@ -98,7 +98,7 @@
 		) VALUES (
 		#{shopId},
 		#{itemCategory}, #{itemSubcategory}, #{itemName}, #{itemDetail},
-		#{itemImage}, #{price}, #{note}, #{isVisible}, #{isOrderable},
+		#{itemImage}, #{price}, #{note}, #{visible}, #{orderable},
 		#{stockQuantity}
 		)
 	</insert>
@@ -134,9 +134,9 @@
 		price =
 		#{price},
 		note = #{note},
-		is_visible = #{isVisible},
+		is_visible = #{visible},
 		is_orderable =
-		#{isOrderable},
+		#{orderable},
 		stock_quantity = #{stockQuantity}
 		WHERE menu_item_id =
 		#{menuItemId}

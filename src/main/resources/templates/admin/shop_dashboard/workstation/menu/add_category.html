@@ -1,4 +1,3 @@
-<!-- admin/shop_dashboard/workstation/menu/add_category.html -->
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="ja">
 
@@ -19,7 +18,7 @@
 			※ メニューは <strong>大分類 → 中分類 → 商品</strong> の順で構成されます。
 		</p>
 
-		<form th:action="@{'/admin/' + ${shopId} + '_dashboard/workstation/menu/add'}" method="post">
+		<form id="categoryForm" th:action="@{'/admin/' + ${shopId} + '_dashboard/workstation/menu/add'}" method="post">
 			<input type="hidden" name="shopId" th:value="${shopId}" />
 
 			<div class="mb-3">
@@ -29,13 +28,55 @@
 
 			<div class="d-flex justify-content-between">
 				<a th:href="@{'/admin/' + ${shopId} + '_dashboard/workstation/menu/list'}"
-					class="btn btn-outline-secondary">← 戻る</a>
-				<button type="submit" class="btn btn-primary">登録する</button>
+					class="btn btn-outline-secondary" data-tab-link data-view="menu">← 戻る</a>
+
+				<button type="button" id="submitForm" class="btn btn-primary">登録する</button>
 			</div>
 		</form>
 	</div>
 
-	<script th:src="@{/js/bootstrap.bundle.min.js}"></script>
+	<!-- ✅ JavaScript：fetch送信＆タブ内反映 -->
+	<script>
+		window.addEventListener("DOMContentLoaded", () => {
+			const btn = document.getElementById("submitForm");
+			const form = document.getElementById("categoryForm");
+
+			console.log("[DEBUG] btn:", btn);
+			console.log("[DEBUG] form:", form);
+
+			if (!btn || !form) return;
+
+			btn.addEventListener("click", () => {
+				console.log("[DEBUG] 登録ボタンクリック");
+
+				const formData = new FormData(form);
+				const shopId = formData.get("shopId");
+
+				// fetch でフォーム送信（POST）
+				fetch(form.action, {
+					method: "POST",
+					body: formData
+				})
+					.then(res => {
+						if (!res.ok) throw new Error("登録に失敗しました");
+						return fetch(`/admin/${shopId}_dashboard/workstation/menu/list`);
+					})
+					.then(res => res.text())
+					.then(html => {
+						const area = document.getElementById("tab-content-area");
+						area.innerHTML = html;
+
+						const script = document.createElement("script");
+						script.src = "/js/admin/menu_list.js";
+						script.defer = true;
+						document.body.appendChild(script);
+					})
+					.catch(err => {
+						alert("エラー: " + err.message);
+					});
+			});
+		});
+	</script>
 </body>
 
 </html>
