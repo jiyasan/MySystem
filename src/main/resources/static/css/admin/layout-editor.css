@@ -1,138 +1,150 @@
 @charset "UTF-8";
 
-html, body {
-  margin: 0;
-  padding: 0;
-  height: 100%;
-  font-family: sans-serif;
+html,
+body {
+	margin: 0;
+	padding: 0;
+	height: 100%;
+	font-family: sans-serif;
 }
 
 h2 {
-  margin: 1rem;
+	margin: 1rem;
 }
 
 .highlight {
-  background-color: #cceeff !important;
+	background-color: #cceeff !important;
 }
 
 .overlap {
-  background-color: #ffdddd !important;
+	background-color: #ffdddd !important;
 }
 
 #layout-editor-container {
-  display: flex;
-  flex-direction: column;
-  height: calc(100vh - 3rem); /* タイトル分を除外 */
-  overflow: hidden;
+	display: flex;
+	flex-direction: column;
+	height: calc(100vh - 3rem);
+	/* タイトル分を除外 */
+	overflow: hidden;
 }
 
 #layout-grid-wrapper {
-  overflow: auto;
-  height: 60%; /* 初期高さ */
-  background-color: #f9f9f9;
-  padding: 10px;
+	overflow: auto;
+	height: 60%;
+	/* 初期高さ */
+	background-color: #f9f9f9;
+	padding: 10px;
 }
 
 #layout-grid {
-  border-collapse: collapse;
+	border-collapse: collapse;
 }
 
-#layout-grid th, #layout-grid td {
-  border: 1px solid #aaa;
-  width: 40px;
-  height: 40px;
-  text-align: center;
-  position: relative;
+#layout-grid th,
+#layout-grid td {
+	border: 1px solid #aaa;
+	width: 40px;
+	height: 40px;
+	text-align: center;
+	position: relative;
 }
+
 
 #layout-grid th {
-  background-color: #f2f2f2;
-  cursor: pointer;
+	background-color: #f2f2f2;
+	cursor: pointer;
+}
+
+#layout-grid td {
+	aspect-ratio: 1 / 1;
+	min-width: 40px;
 }
 
 #popup-menu {
-  position: absolute;
-  background-color: white;
-  border: 1px solid #ccc;
-  padding: 5px;
-  box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.2);
-  display: none;
-  z-index: 10;
+	position: absolute;
+	background-color: white;
+	border: 1px solid #ccc;
+	padding: 5px;
+	box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.2);
+	display: none;
+	z-index: 10;
 }
 
 #horizontal-divider {
-  height: 5px;
-  background-color: #ccc;
-  cursor: row-resize;
+	height: 5px;
+	background-color: #ccc;
+	cursor: row-resize;
 }
 
 #bottom-panel-wrapper {
-  height: 40%;
-  background-color: #fff;
-  border-top: 2px solid #ccc;
-  overflow: hidden;
+	height: 40%;
+	background-color: #fff;
+	border-top: 2px solid #ccc;
+	overflow: hidden;
 }
 
 #horizontal-flex-wrapper {
-  display: flex;
-  height: 100%;
-  position: relative;
+	display: flex;
+	height: 100%;
+	position: relative;
 }
 
 #editor-panel,
 #table-list {
-  flex: none;
-  width: 50%; /* 初期幅 */
-  padding: 10px;
-  overflow-y: auto;
+	flex: none;
+	width: 50%;
+	/* 初期幅 */
+	padding: 10px;
+	overflow-y: auto;
 }
 
 #vertical-divider {
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  left: 50%; /* 中央に配置 */
-  width: 5px;
-  background-color: #ccc;
-  cursor: col-resize;
-  z-index: 10;
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	left: 50%;
+	/* 中央に配置 */
+	width: 5px;
+	background-color: #ccc;
+	cursor: col-resize;
+	z-index: 10;
 }
 
 #table-list ul {
-  list-style: none;
-  padding: 0;
+	list-style: none;
+	padding: 0;
 }
 
 #table-list li {
-  margin-bottom: 5px;
-  background: #f0f0f0;
-  padding: 4px 8px;
-  border-radius: 4px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+	margin-bottom: 5px;
+	background: #f0f0f0;
+	padding: 4px 8px;
+	border-radius: 4px;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
 }
 
 button {
-  margin-top: 0.5rem;
-  padding: 0.3rem 0.8rem;
-  font-size: 0.9rem;
-  border-radius: 5px;
-  border: 1px solid #ccc;
-  background: #eee;
-  cursor: pointer;
+	margin-top: 0.5rem;
+	padding: 0.3rem 0.8rem;
+	font-size: 0.9rem;
+	border-radius: 5px;
+	border: 1px solid #ccc;
+	background: #eee;
+	cursor: pointer;
 }
 
 button:hover {
-  background: #ddd;
+	background: #ddd;
 }
 
 .btn.btn-danger {
-  background: #ff4444;
-  color: white;
-  border: none;
+	background: #ff4444;
+	color: white;
+	border: none;
 }
 
 .btn.btn-danger:hover {
-  background: #cc0000;
+	background: #cc0000;
 }

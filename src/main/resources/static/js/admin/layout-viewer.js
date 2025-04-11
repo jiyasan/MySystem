@@ -42,7 +42,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 	// データ反映（ベースセルのみ）
 	layoutItems.forEach(item => {
-		if (!item.base) return;
+		if (!item.isBase) return;
 
 		const r = item.rowIndex;
 		const c = item.colIndex;

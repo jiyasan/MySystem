@@ -8,7 +8,10 @@
 </head>
 
 <body class="container mt-4">
-	<h2 class="text-center mb-3">ようこそ！</h2>
+	<h2 class="text-center mb-3">
+		ようこそ！<span class="h4" th:text="${shop.shopName} + ' へ'">店舗へ</span>
+	</h2>
+
 
 	<form th:action="@{'/guest/' + ${shopId} + '/entry/start'}" method="post" class="mx-auto" style="max-width: 400px;">
 		<input type="hidden" name="tableId" th:value="${tableId}" />

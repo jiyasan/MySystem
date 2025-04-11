@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.example.app.entity.Shop;
+import com.example.app.mapper.ShopMapper;
 import com.example.app.mapper.TableMapper;
 import com.example.app.service.CustomerSessionService;
 import com.example.app.service.TableService;
@@ -31,33 +33,40 @@ public class GuestEntryController {
 	@Autowired
 	private TableMapper tableMapper;
 
+	@Autowired
+	private ShopMapper shopMapper;
+
 	// 🚪 入店フォームの表示
 	@GetMapping("/{tableId}")
 	public String showEntryForm(
-	        @PathVariable("shopId") int shopId,
-	        @PathVariable("tableId") int tableId,
-	        Model model
-	) {
-	    int actualShopId = tableMapper.findShopIdByTableId(tableId);
+			@PathVariable("shopId") int shopId,
+			@PathVariable("tableId") int tableId,
+			Model model) {
+		Shop shop = shopMapper.findById(shopId); // 👈 追加
+		model.addAttribute("shop", shop); // 👈 追加
+		
+		int actualShopId = tableMapper.findShopIdByTableId(tableId);
 		if (actualShopId != shopId) {
 			model.addAttribute("errorMessage", "このテーブルは指定された店舗に存在しません");
 			model.addAttribute("shopId", shopId);
 			model.addAttribute("tableId", tableId);
+
 			return "guest/entry";
-			}
+		}
 
-	    if (!tableService.isValidTable(tableId)) {
-	        model.addAttribute("errorMessage", "このテーブルは現在ご利用いただけません");
-	        model.addAttribute("shopId", shopId);
-	        model.addAttribute("tableId", tableId);
-	        return "guest/entry";
-	        }
+		if (!tableService.isValidTable(tableId)) {
+			model.addAttribute("errorMessage", "このテーブルは現在ご利用いただけません");
+			model.addAttribute("shopId", shopId);
+			model.addAttribute("tableId", tableId);
 
-	    model.addAttribute("shopId", shopId);
-	    model.addAttribute("tableId", tableId);
-	    return "guest/entry";
+			return "guest/entry";
+		}
+
+		model.addAttribute("shopId", shopId);
+		model.addAttribute("tableId", tableId);
+
+		return "guest/entry";
 	}
-
 
 	// 📝 入店処理（セッション作成 or 再利用）
 	@PostMapping("/start")

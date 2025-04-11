@@ -1,21 +1,29 @@
 package com.example.app.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public class LayoutItem {
 
 	private int rowIndex;
 	private int colIndex;
-	private String type;
-	private String name;
-	private String color;
-	private int rowspan;
-	private int colspan;
-	private String status;
-	private boolean base;
+	private String type; // "table" / "other" など
+	private String name; // 表示名（テーブル名など）
+	private String color; // セルの背景色
+	private int rowspan; // 結合の行数
+	private int colspan; // 結合の列数
+	private String status; // UI用：予約済み / 使用中など
 
+	@JsonProperty("isBase")
+	private boolean base; // is_base: true=代表セル
+
+	@JsonProperty("isDeleted")
+	private boolean deleted; // is_deleted: true=非表示セル
+
+	// 💡 コンストラクタ（@RequestBodyで必要）
 	public LayoutItem() {
-		// デフォルトコンストラクタ必須（@RequestBody用）
 	}
 
+	// --- Getter / Setter ---
 	public int getRowIndex() {
 		return rowIndex;
 	}
@@ -88,6 +96,14 @@ public class LayoutItem {
 		this.base = base;
 	}
 
+	public boolean isDeleted() {
+		return deleted;
+	}
+
+	public void setDeleted(boolean deleted) {
+		this.deleted = deleted;
+	}
+
 	@Override
 	public String toString() {
 		return "LayoutItem{" +
@@ -100,7 +116,7 @@ public class LayoutItem {
 				", colspan=" + colspan +
 				", status='" + status + '\'' +
 				", base=" + base +
+				", deleted=" + deleted +
 				'}';
 	}
-
 }

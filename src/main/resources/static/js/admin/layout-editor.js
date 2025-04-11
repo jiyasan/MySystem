@@ -51,7 +51,6 @@ class LayoutEditor {
 		this.deleteBtn.style.display = "none";
 		this.initialize();
 		this.renumberColumns();
-		this.markUnsaved();
 	}
 
 	initialize() {
@@ -358,6 +357,7 @@ class LayoutEditor {
 		})
 			.then((res) => res.text())
 			.then((result) => {
+					console.log("✅ 保存結果:", result); // ← ここ仕込む
 				if (result === "OK") {
 					alert("保存しました！");
 					window.location.href = `/admin/${shopId}_dashboard/layout`;
