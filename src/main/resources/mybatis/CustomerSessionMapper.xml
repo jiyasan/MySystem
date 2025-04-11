@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.example.app.mapper.CustomerSessionMapper">
+
+	<!-- 未会計セッションを1件取得 -->
+	<select id="findUnpaidByTableId"
+		resultType="com.example.app.entity.CustomerSession">
+		SELECT *
+		FROM customer_sessions
+		WHERE table_id = #{tableId}
+		AND is_paid = false
+		ORDER BY started_at DESC
+		LIMIT 1
+	</select>
+
+	<select id="countUnpaidSessionByTableId" resultType="int">
+		SELECT
+		COUNT(*)
+		FROM customer_sessions
+		WHERE table_id = #{tableId}
+		AND is_paid =
+		false
+	</select>
+
+	<!-- セッション登録 -->
+	<insert id="insert"
+		parameterType="com.example.app.entity.CustomerSession">
+		INSERT INTO customer_sessions (
+		customer_sessions_id,
+		table_id,
+		guest_count,
+		started_at,
+		ended_at,
+		is_paid,
+		total_amount,
+		note
+		)
+		VALUES (
+		#{customerSessionsId},
+		#{tableId},
+		#{guestCount},
+		#{startedAt},
+		#{endedAt},
+		#{isPaid},
+		#{totalAmount},
+		#{note}
+		)
+	</insert>
+
+</mapper>

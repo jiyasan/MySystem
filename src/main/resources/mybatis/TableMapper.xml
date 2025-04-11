@@ -5,7 +5,6 @@
 
 <mapper namespace="com.example.app.mapper.TableMapper">
 
-
 	<!-- 🎯 1. テーブル追加 -->
 	<insert id="insert" parameterType="com.example.app.entity.Table">
 		INSERT INTO tables (
@@ -22,16 +21,18 @@
 	</insert>
 
 	<!-- 🔎 2. テーブル名で検索 -->
- 	<select id="findByShopIdAndName" parameterType="map"
+	<select id="findByShopIdAndName" parameterType="map"
 		resultType="com.example.app.entity.Table">
 		SELECT
 		table_id AS tableId,
 		shop_id AS shopId,
-		table_name AS tableName,
+		table_name AS
+		tableName,
 		status,
 		is_deleted AS isDeleted
 		FROM tables
-		WHERE shop_id = #{shopId}
+		WHERE shop_id =
+		#{shopId}
 		AND table_name = #{tableName}
 		LIMIT 1
 	</select>
@@ -40,7 +41,8 @@
 	<!-- ♻️ 3. テーブル復活 -->
 	<update id="revive" parameterType="map">
 		UPDATE tables
-		SET is_deleted = false
+		SET is_deleted =
+		false
 		WHERE shop_id = #{shopId}
 		AND table_name = #{tableName}
 	</update>
@@ -50,5 +52,20 @@
 		DELETE FROM tables
 		WHERE shop_id = #{shopId}
 	</delete>
+
+	<select id="findShopIdByTableId" resultType="int">
+		SELECT shop_id
+		FROM tables
+		WHERE table_id = #{tableId}
+	</select>
+
+	<select id="countValidTableById" resultType="int">
+		SELECT COUNT(*)
+		FROM
+		tables
+		WHERE table_id = #{tableId}
+		AND status = 0
+		AND is_deleted = false
+	</select>
 
 </mapper>

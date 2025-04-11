@@ -99,6 +99,7 @@ public class LayoutItem {
 				", rowspan=" + rowspan +
 				", colspan=" + colspan +
 				", status='" + status + '\'' +
+				", base=" + base +
 				'}';
 	}
 
