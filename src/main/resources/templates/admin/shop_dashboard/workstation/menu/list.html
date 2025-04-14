@@ -120,6 +120,13 @@
 	</div>
 
 	<script th:src="@{/js/bootstrap.bundle.min.js}"></script>
+	<script th:src="@{/js/admin/menu_list.js}" defer></script>
+	<script>
+		document.addEventListener("DOMContentLoaded", function () {
+			if (window.initMenuList) {
+				window.initMenuList();
+			}
+		});
+	</script>
 </body>
-
 </html>

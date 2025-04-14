@@ -24,7 +24,7 @@ public class CustomerSessionServiceImpl implements CustomerSessionService {
 	private CustomerNicknameMapper nicknameMapper;
 
 	@Override
-	public String createSession(int tableId, int guestCount, String nickname, String deviceToken) {
+	public String createSession(int tableId, int guestCount, String nickname, String deviceToken, int shopId) {
 		CustomerSession existing = customerSessionMapper.findUnpaidByTableId(tableId);
 		if (existing != null) {
 			insertNicknameIfPresent(existing.getCustomerSessionsId(), nickname, deviceToken);
@@ -42,6 +42,7 @@ public class CustomerSessionServiceImpl implements CustomerSessionService {
 		session.setIsPaid(false);
 		session.setTotalAmount(0);
 		session.setNote(null);
+		session.setShopId(shopId); // ✅ 追加
 
 		customerSessionMapper.insert(session);
 
@@ -62,19 +63,12 @@ public class CustomerSessionServiceImpl implements CustomerSessionService {
 	}
 
 	private static final String[] COLOR_CHOICES = {
-			"#F44336", // 赤
-			"#2196F3", // 青
-			"#4CAF50", // 緑
-			"#FFEB3B", // 黄
-			"#9C27B0", // 紫
-			"#E91E63", // ピンク
-			"#00BCD4", // 水色
-			"#FF9800" // オレンジ
+			"#F44336", "#2196F3", "#4CAF50", "#FFEB3B",
+			"#9C27B0", "#E91E63", "#00BCD4", "#FF9800"
 	};
 
 	private String chooseColorAvoidingDuplicates(String sessionId) {
 		List<String> usedColors = nicknameMapper.findUsedColorsBySessionId(sessionId);
-
 		List<String> unusedColors = Arrays.stream(COLOR_CHOICES)
 				.filter(color -> !usedColors.contains(color))
 				.collect(Collectors.toList());
@@ -83,5 +77,4 @@ public class CustomerSessionServiceImpl implements CustomerSessionService {
 		int index = (int) (Math.random() * source.size());
 		return source.get(index);
 	}
-
 }

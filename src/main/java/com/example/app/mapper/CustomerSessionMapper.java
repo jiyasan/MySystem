@@ -14,4 +14,5 @@ public interface CustomerSessionMapper {
 
     // セッション登録
     void insert(CustomerSession session);
+    CustomerSession findById(@Param("sessionId") String sessionId);
 }

@@ -2,8 +2,6 @@
 
 html,
 body {
-	margin: 0;
-	padding: 0;
 	height: 100%;
 	font-family: sans-serif;
 }
@@ -29,15 +27,20 @@ h2 {
 }
 
 #layout-grid-wrapper {
+	margin: 0 auto;
 	overflow: auto;
 	height: 60%;
 	/* 初期高さ */
 	background-color: #f9f9f9;
 	padding: 10px;
+	max-width: 100%;
 }
 
 #layout-grid {
 	border-collapse: collapse;
+	table-layout: fixed;
+	width: calc(60px * 10 + 1px * 11);
+	/* 10列 + 境界線分 */
 }
 
 #layout-grid th,
@@ -45,7 +48,10 @@ h2 {
 	border: 1px solid #aaa;
 	width: 40px;
 	height: 40px;
+	font-size: 14px;
+	padding: 0;
 	text-align: center;
+	vertical-align: middle;
 	position: relative;
 }
 

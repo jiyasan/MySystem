@@ -18,33 +18,36 @@
 			<a th:href="@{'/admin/' + ${shop.shopId} + '_dashboard'}" class="btn btn-outline-secondary btn-sm">← 戻る</a>
 		</div>
 
-		<!-- 💬 メッセージ -->
+		<!-- 💬 メッセージ表示 -->
 		<div id="system-message" class="alert alert-info text-center small fw-bold" style="display: none;"></div>
 
-
-		<!-- 🔐 セッション切れ時だけログイン導線を表示 -->
+		<!-- 🔐 セッション切れ対応 -->
 		<div th:if="${sessionExpired}" class="text-center mt-2">
 			<a th:href="@{/admin/login}" class="btn btn-sm btn-danger">ログイン画面へ</a>
 		</div>
 
-
-		<!-- タブ切り替えボタン -->
+		<!-- 🧭 タブUI -->
 		<div class="tab-container mb-3">
 			<a href="#table" class="dashboard-tab-button" data-view="table">テーブル一覧</a>
 			<a href="#menu" class="dashboard-tab-button" data-view="menu">メニュー一覧</a>
 			<a href="#order" class="dashboard-tab-button" data-view="order">オーダー一覧</a>
 		</div>
 
-		<!-- 📄 表示エリア（動的読み込み先） -->
+		<!-- 📄 タブ中身 -->
 		<div id="tab-content-area" class="border rounded p-3 bg-light">
 			<p class="text-muted small">読み込み中…</p>
 		</div>
 
-
-
 	</div>
+
+	<!-- ✅ JS読み込み順（script.js → SPA本体） -->
 	<script th:src="@{/js/bootstrap.bundle.min.js}"></script>
 	<script th:src="@{/js/admin/script.js}" defer></script>
-	<script th:src="@{/js/admin/workstation-app.js}" defer></script>
+	<script type="module" th:src="@{/js/admin/workstation-app.js}"></script>
+	<script th:src="@{/js/admin/menu_list.js}" defer></script>
+	<script th:src="@{/js/admin/table_list.js}" defer></script>
+	<script th:src="@{/js/admin/order_list.js}" defer></script>
+
 </body>
+
 </html>

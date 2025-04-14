@@ -2,6 +2,7 @@ package com.example.app.controller.admin;
 
 import java.io.File;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -20,13 +21,20 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.example.app.dto.LayoutItem;
+import com.example.app.entity.CustomerSession;
 import com.example.app.entity.MenuCategory;
 import com.example.app.entity.MenuItem;
 import com.example.app.entity.MenuSubcategory;
+import com.example.app.entity.OrderItem;
+import com.example.app.entity.Table;
 import com.example.app.mapper.MenuMapper;
+import com.example.app.mapper.TableMapper;
 import com.example.app.service.LayoutService;
+import com.example.app.service.MenuService;
 import com.example.app.service.ShopService;
 import com.example.app.util.NullSafeList;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Controller
 @RequestMapping("/admin/{shopId}_dashboard/workstation")
@@ -41,13 +49,84 @@ public class WorkstationController {
 	@Autowired
 	private MenuMapper menuMapper;
 
+	@Autowired
+	private TableMapper tableMapper;
+
+	@Autowired
+	private MenuService menuService;
+
 	// テーブルレイアウト表示
 	@GetMapping("/table/list")
-	public String tableListPartial(@PathVariable("shopId") int shopId, Model model) {
-		List<LayoutItem> layoutItems = layoutService.getLayoutWithStatus(shopId);
-		model.addAttribute("layoutItems", layoutItems);
+	public String tableListPartial(@PathVariable("shopId") int shopId, Model model) throws JsonProcessingException {
+		try {
+			// 🔸 レイアウト情報取得
+			List<LayoutItem> layoutItems = layoutService.getLayoutWithStatus(shopId);
+
+			System.out.println("🟠 layoutItems.size() = " + layoutItems.size());
+			for (LayoutItem item : layoutItems) {
+				System.out.println("▶ " + item);
+			}
+
+			// 🔸 テーブルIDマッピング（name → table_id）
+			List<Table> tables = tableMapper.findByShopId(shopId);
+			System.out.println("🟠 tables.size() = " + tables.size());
+			for (Table t : tables) {
+				System.out.println("■ " + t.getTableName() + " -> ID: " + t.getTableId());
+			}
+
+			Map<String, Integer> tableIdMap = tables.stream()
+					.collect(Collectors.toMap(Table::getTableName, Table::getTableId));
+
+			// ✅ JSON文字列に変換
+			String layoutItemsJson = new ObjectMapper().writeValueAsString(layoutItems);
+			String tableIdMapJson = new ObjectMapper().writeValueAsString(tableIdMap);
+
+			// 🔸 モデルに渡す
+			model.addAttribute("shopId", shopId);
+			model.addAttribute("layoutItems", layoutItems);
+			model.addAttribute("tableIdMapJson", tableIdMapJson);
+			model.addAttribute("layoutItemsJson", layoutItemsJson); // ← 🔧これを追加
+
+			return "admin/shop_dashboard/workstation/table/list";
+
+		} catch (Exception e) {
+			e.printStackTrace(); // 必ずログ出力
+			throw e;
+		}
+	}
+
+	// テーブル詳細表示
+	@GetMapping("/table/detail/{tableId}")
+	public String tableDetail(
+			@PathVariable("shopId") int shopId,
+			@PathVariable("tableId") int tableId,
+			Model model) {
+		Table table = tableMapper.findById(tableId);
+		if (table == null || table.getShopId() != shopId) {
+			throw new IllegalArgumentException("無効なテーブルID");
+		}
+
+		CustomerSession session = tableMapper.findSessionByTableId(tableId);
+		List<OrderItem> orderItems = tableMapper.findOrderItemsByTableId(tableId);
+
+		// menu_items から価格を取得して合計計算
+		BigDecimal totalBill = BigDecimal.ZERO;
+		for (OrderItem item : orderItems) {
+			// menu_item_id から価格を取得（仮に別マッパーで）
+			// 実際には MenuItemMapper などが必要
+			BigDecimal price = menuService.getPriceByMenuItemId(item.getMenuItemId());
+			if (price != null) {
+				totalBill = totalBill.add(price.multiply(BigDecimal.valueOf(item.getQuantity())));
+			}
+		}
+
 		model.addAttribute("shopId", shopId);
-		return "admin/shop_dashboard/workstation/table/list";
+		model.addAttribute("table", table);
+		model.addAttribute("session", session);
+		model.addAttribute("orderItems", orderItems);
+		model.addAttribute("totalBill", totalBill);
+
+		return "admin/shop_dashboard/workstation/table/detail";
 	}
 
 	// メニュー一覧表示
@@ -180,27 +259,26 @@ public class WorkstationController {
 
 	@ResponseBody
 	public Map<String, Object> addCategory(@RequestParam("shopId") int shopId,
-	                                       @RequestParam("categoryName") String categoryName) {
-	    Map<String, Object> response = new HashMap<>();
-	    try {
-	        MenuCategory category = new MenuCategory();
-	        category.setShopId(shopId);
-	        category.setCategoryName(categoryName);
-	        menuMapper.insertCategory(category);
+			@RequestParam("categoryName") String categoryName) {
+		Map<String, Object> response = new HashMap<>();
+		try {
+			MenuCategory category = new MenuCategory();
+			category.setShopId(shopId);
+			category.setCategoryName(categoryName);
+			menuMapper.insertCategory(category);
 
-	        response.put("success", true);
-	        response.put("message", "大分類を追加しました");
-	        response.put("redirectUrl", "/admin/" + shopId + "_dashboard/workstation/menu/list"); // メニューリストのURL
+			response.put("success", true);
+			response.put("message", "大分類を追加しました");
+			response.put("redirectUrl", "/admin/" + shopId + "_dashboard/workstation/menu/list"); // メニューリストのURL
 
-	        return response;
+			return response;
 
-	    } catch (Exception e) {
-	        response.put("success", false);
-	        response.put("message", "エラー: " + e.getMessage());
-	        return response;
-	    }
+		} catch (Exception e) {
+			response.put("success", false);
+			response.put("message", "エラー: " + e.getMessage());
+			return response;
+		}
 	}
-
 
 	// 中分類追加処理
 	@PostMapping("/menu/{categoryId}/add")

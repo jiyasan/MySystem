@@ -42,8 +42,12 @@
 		window.shopId = /*[[${shopId}]]*/ 0;
 		/*]]>*/
 	</script>
+<!-- layout-grid.js：共通描画ロジック -->
+<script type="module" th:src="@{/js/admin/layout-grid.js}"></script>
 
-	<script th:src="@{/js/admin/layout-viewer.js}" defer></script>
+<!-- layout-viewer.js：表示専用処理 -->
+<script type="module" th:src="@{/js/admin/layout-viewer.js}"></script>
+
 </body>
 
 </html>

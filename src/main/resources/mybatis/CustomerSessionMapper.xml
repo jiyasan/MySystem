@@ -15,6 +15,23 @@
 		LIMIT 1
 	</select>
 
+	<select id="findById" parameterType="string"
+		resultType="com.example.app.entity.CustomerSession">
+		SELECT
+		customer_sessions_id,
+		table_id,
+		shop_id, <!-- ★これがないと死ぬ -->
+		guest_count,
+		started_at,
+		ended_at,
+		is_paid,
+		total_amount,
+		note
+		FROM
+		customer_sessions
+		WHERE customer_sessions_id = #{sessionId}
+	</select>
+
 	<select id="countUnpaidSessionByTableId" resultType="int">
 		SELECT
 		COUNT(*)
@@ -35,7 +52,8 @@
 		ended_at,
 		is_paid,
 		total_amount,
-		note
+		note,
+		shop_id
 		)
 		VALUES (
 		#{customerSessionsId},
@@ -45,7 +63,8 @@
 		#{endedAt},
 		#{isPaid},
 		#{totalAmount},
-		#{note}
+		#{note},
+		#{shopId}
 		)
 	</insert>
 

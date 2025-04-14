@@ -42,15 +42,15 @@ public class GuestEntryController {
 			@PathVariable("shopId") int shopId,
 			@PathVariable("tableId") int tableId,
 			Model model) {
-		Shop shop = shopMapper.findById(shopId); // 👈 追加
-		model.addAttribute("shop", shop); // 👈 追加
-		
+
+		Shop shop = shopMapper.findById(shopId);
+		model.addAttribute("shop", shop);
+
 		int actualShopId = tableMapper.findShopIdByTableId(tableId);
 		if (actualShopId != shopId) {
 			model.addAttribute("errorMessage", "このテーブルは指定された店舗に存在しません");
 			model.addAttribute("shopId", shopId);
 			model.addAttribute("tableId", tableId);
-
 			return "guest/entry";
 		}
 
@@ -58,13 +58,11 @@ public class GuestEntryController {
 			model.addAttribute("errorMessage", "このテーブルは現在ご利用いただけません");
 			model.addAttribute("shopId", shopId);
 			model.addAttribute("tableId", tableId);
-
 			return "guest/entry";
 		}
 
 		model.addAttribute("shopId", shopId);
 		model.addAttribute("tableId", tableId);
-
 		return "guest/entry";
 	}
 
@@ -78,23 +76,27 @@ public class GuestEntryController {
 			HttpServletRequest request,
 			HttpServletResponse response,
 			RedirectAttributes redirectAttributes) {
-		// 🧭 テーブルと店舗の整合性を再チェック
+
+		// 整合性チェック
 		int actualShopId = tableMapper.findShopIdByTableId(tableId);
 		if (actualShopId != shopId) {
 			redirectAttributes.addFlashAttribute("errorMessage", "不正なアクセスです");
 			return "redirect:/guest/" + shopId + "/entry/" + tableId;
 		}
 
-		// 🍪 device_token の取得（なければ生成してCookieに保存）
+		// 🍪 deviceToken を取得 or 作成
 		String deviceToken = getOrCreateDeviceToken(request, response);
 
-		// 📝 セッション登録（存在すれば再利用）
-		String sessionId = customerSessionService.createSession(tableId, guestCount, nickname, deviceToken);
-
-		return "redirect:/menu/" + sessionId;
+		try {
+			// ✅ shopId を含めてセッション作成
+			String sessionId = customerSessionService.createSession(tableId, guestCount, nickname, deviceToken, shopId);
+			return "redirect:/menu/" + sessionId;
+		} catch (Exception e) {
+			redirectAttributes.addFlashAttribute("errorMessage", "入店処理中にエラーが発生しました。店員にお声がけください。");
+			return "redirect:/guest/" + shopId + "/entry/" + tableId;
+		}
 	}
 
-	// 🍪 device_token を Cookie から取得 or UUIDで生成
 	private String getOrCreateDeviceToken(HttpServletRequest request, HttpServletResponse response) {
 		if (request.getCookies() != null) {
 			for (Cookie cookie : request.getCookies()) {
@@ -106,7 +108,7 @@ public class GuestEntryController {
 		String newToken = java.util.UUID.randomUUID().toString();
 		Cookie cookie = new Cookie("deviceToken", newToken);
 		cookie.setPath("/");
-		cookie.setMaxAge(60 * 60 * 24 * 365); // 1年
+		cookie.setMaxAge(60 * 60 * 24 * 365);
 		response.addCookie(cookie);
 		return newToken;
 	}

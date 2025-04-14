@@ -4,33 +4,42 @@
 <head>
 	<meta charset="UTF-8">
 	<title>テーブル一覧</title>
+	<link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
 	<link rel="stylesheet" th:href="@{/css/admin/layout-editor.css}">
 </head>
 
 <body>
+	<div class="container mt-1">
 
-	<div id="layout-grid-wrapper">
-		<table id="layout-grid" class="table table-bordered">
-			<thead>
-				<tr>
-					<th></th>
-				</tr>
-			</thead>
-			<tbody></tbody>
-		</table>
+		<!-- ✅ shopIdとlayoutItemsをdata属性で保持 -->
+		<div id="layout-grid-wrapper" th:attr="data-shop-id=${shopId}, data-layout-items=${layoutItemsJson}">
+			<table id="layout-grid" class="table table-bordered">
+				<thead>
+					<tr></tr>
+				</thead>
+				<tbody></tbody>
+			</table>
+		</div>
 	</div>
-	<!-- inline script（先にwindowに代入） -->
+
+	<!-- 🧩 JS変数に Thymeleaf で埋め込む -->
 	<script th:inline="javascript">
 		/*<![CDATA[*/
-		window.layoutItems = /*[[${layoutItems}]]*/[];
-		window.shopId = /*[[${shopId}]]*/ 0;
+		const shopId = /*[[${shopId}]]*/ 0;
+		const layoutItems = /*[[${layoutItemsJson}]]*/[];
+		const tableIdMap = /*[[${tableIdMapJson}]]*/ {};
+
+		const parsedTableIdMap = typeof tableIdMap === "string" ? JSON.parse(tableIdMap) : tableIdMap;
+
+		window.__tableData = window.__tableData || {};
+		window.__tableData[shopId] = {
+			layoutItems: layoutItems,
+			tableIdMap: parsedTableIdMap
+		};
 		/*]]>*/
 	</script>
-
-	<!-- scriptファイル（その後にtable.jsを読み込む） -->
-	<script th:src="@{/js/admin/table.js}" defer></script>
-
-
+	<script type="module" th:src="@{/js/admin/layout-grid.js}"></script>
+	<script type="module" th:src="@{/js/admin/table_list.js}"></script>
 </body>
 
 </html>

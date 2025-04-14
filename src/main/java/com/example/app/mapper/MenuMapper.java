@@ -5,6 +5,7 @@ import java.util.List;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
+import com.example.app.dto.MenuItemDTO;
 import com.example.app.entity.MenuCategory;
 import com.example.app.entity.MenuItem;
 import com.example.app.entity.MenuSubcategory;
@@ -32,5 +33,10 @@ public interface MenuMapper {
     MenuItem findMenuItemById(Integer itemId);
     int insertMenuItem(MenuItem item);
     int updateMenuItem(MenuItem item);
+
+    //メニュー表表示
+    List<MenuCategory> findAllCategoriesByShopId(int shopId);
+    List<MenuSubcategory> findAllSubcategoriesByShopId(int shopId);
+    List<MenuItemDTO> findAllItemDTOsByShopId(int shopId);
 
 }

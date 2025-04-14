@@ -10,7 +10,8 @@
 <body>
 	<div class="container mt-1" style="max-width: 600px">
 		<h3 class="text-center mb-3">
-			大分類を編集　<span class="text-danger small">※変更後の名前がメニューに表示されます</span>
+			大分類を編集<br />
+			<span class="text-danger small">※変更後の名前がメニューに表示されます</span>
 		</h3>
 		<p class="text-muted text-center small">
 			※ メニューは <strong>大分類 → 中分類 → 商品</strong> の順で構成されます。
@@ -27,7 +28,7 @@
 
 			<div class="d-flex justify-content-between">
 				<a th:href="@{'/admin/' + ${shopId} + '_dashboard/workstation/menu/list'}"
-					class="btn btn-outline-secondary">← 戻る</a>
+					class="btn btn-outline-secondary" data-tab-link data-view="menu">← 戻る</a>
 				<button type="submit" class="btn btn-primary">保存する</button>
 			</div>
 		</form>

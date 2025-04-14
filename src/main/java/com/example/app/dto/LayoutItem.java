@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class LayoutItem {
 
+	private int tableId;
 	private int rowIndex;
 	private int colIndex;
 	private String type; // "table" / "other" など
@@ -104,6 +105,14 @@ public class LayoutItem {
 		this.deleted = deleted;
 	}
 
+	public int getTableId() {
+		return tableId;
+	}
+
+	public void setTableId(int tableId) {
+		this.tableId = tableId;
+	}
+	
 	@Override
 	public String toString() {
 		return "LayoutItem{" +
@@ -117,6 +126,7 @@ public class LayoutItem {
 				", status='" + status + '\'' +
 				", base=" + base +
 				", deleted=" + deleted +
+				", tableId=" + tableId +
 				'}';
 	}
 }

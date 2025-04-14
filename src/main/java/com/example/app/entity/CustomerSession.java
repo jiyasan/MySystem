@@ -12,8 +12,17 @@ public class CustomerSession {
 	private boolean isPaid;
 	private int totalAmount;
 	private String note;
+	private int shopId;
 
 	// --- Getter / Setter ---
+
+	public int getShopId() {
+		return shopId;
+	}
+
+	public void setShopId(int shopId) {
+		this.shopId = shopId;
+	}
 
 	public String getCustomerSessionsId() {
 		return customerSessionsId;

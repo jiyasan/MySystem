@@ -1,13 +1,17 @@
 // 時計などグローバルUI
 function initGlobalUI() {
-	const clock = document.getElementById("clock");
-	if (clock) {
-		setInterval(() => {
-			const now = new Date();
-			clock.textContent = now.toLocaleTimeString();
-		}, 1000);
-	}
+  const clock = document.getElementById("clock");
+  if (clock) {
+    const updateClock = () => {
+      const now = new Date();
+      clock.textContent = now.toLocaleTimeString();
+    };
+
+    updateClock(); // ✅ 即座に1回実行（これが正解だった）
+    setInterval(updateClock, 1000);
+  }
 }
+
 
 window.addEventListener("DOMContentLoaded", () => {
 	initGlobalUI(); // 時計の更新など

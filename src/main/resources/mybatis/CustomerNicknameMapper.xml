@@ -1,29 +1,60 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="com.example.app.mapper.CustomerNicknameMapper">
 
-	<select id="findUsedColorsBySessionId" resultType="string">
-		SELECT color_code
-		FROM customer_nicknames
-		WHERE session_id = #{sessionId}
-	</select>
-
+	<!-- 🌱 ニックネーム登録 -->
 	<insert id="insertNickname">
 		INSERT INTO customer_nicknames (
 		session_id,
 		device_token,
 		nickname,
-		created_at,
-		color_code
+		color_code,
+		created_at
 		) VALUES (
 		#{sessionId},
 		#{deviceToken},
 		#{nickname},
-		NOW(),
-		#{colorCode}
+		#{colorCode},
+		NOW()
 		)
 	</insert>
+	
+	<!-- 🌱 ニックネーム更新 -->
+	<update id="updateNickname">
+		UPDATE customer_nicknames
+		SET
+		nickname = #{nickname},
+		color_code = #{colorCode},
+		created_at = NOW()
+		WHERE session_id = #{sessionId}
+		AND device_token = #{deviceToken}
+	</update>
+
+	<!-- 🎨 使用済みカラーコード一覧 -->
+	<select id="findUsedColorsBySessionId" resultType="string">
+		SELECT
+		color_code
+		FROM customer_nicknames
+		WHERE session_id = #{sessionId}
+	</select>
+
+	<!-- 👤 再登録チェック（既に登録済みか？） -->
+	<select id="findNicknameBySessionIdAndDeviceToken"
+		resultType="com.example.app.entity.CustomerNickname">
+		SELECT
+		session_id,
+		device_token,
+		nickname,
+		color_code,
+		created_at
+		FROM customer_nicknames
+		WHERE session_id = #{sessionId}
+		AND
+		device_token = #{deviceToken}
+		LIMIT 1
+	</select>
 
 </mapper>

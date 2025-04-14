@@ -1,10 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE mapper
-  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
-  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.example.app.mapper.TableMapper">
-
 	<!-- 🎯 1. テーブル追加 -->
 	<insert id="insert" parameterType="com.example.app.entity.Table">
 		INSERT INTO tables (
@@ -26,23 +22,32 @@
 		SELECT
 		table_id AS tableId,
 		shop_id AS shopId,
-		table_name AS
-		tableName,
+		table_name AS tableName,
 		status,
 		is_deleted AS isDeleted
 		FROM tables
-		WHERE shop_id =
-		#{shopId}
+		WHERE shop_id = #{shopId}
 		AND table_name = #{tableName}
 		LIMIT 1
 	</select>
 
+	<select id="findByShopId" parameterType="int"
+		resultType="com.example.app.entity.Table">
+		SELECT
+		table_id AS tableId,
+		shop_id AS shopId,
+		table_name AS tableName,
+		status,
+		is_deleted AS isDeleted
+		FROM tables
+		WHERE shop_id = #{shopId}
+		AND is_deleted = false
+	</select>
 
 	<!-- ♻️ 3. テーブル復活 -->
 	<update id="revive" parameterType="map">
 		UPDATE tables
-		SET is_deleted =
-		false
+		SET is_deleted = false
 		WHERE shop_id = #{shopId}
 		AND table_name = #{tableName}
 	</update>
@@ -61,11 +66,65 @@
 
 	<select id="countValidTableById" resultType="int">
 		SELECT COUNT(*)
-		FROM
-		tables
+		FROM tables
 		WHERE table_id = #{tableId}
 		AND status = 0
 		AND is_deleted = false
 	</select>
 
+	<!-- 追加：テーブル詳細用 -->
+	<select id="findById" parameterType="int"
+		resultType="com.example.app.entity.Table">
+		SELECT
+		table_id AS tableId,
+		shop_id AS shopId,
+		table_name AS tableName,
+		status,
+		is_deleted AS isDeleted
+		FROM tables
+		WHERE table_id = #{tableId}
+		AND is_deleted = false
+	</select>
+
+	<select id="findSessionByTableId"
+		resultType="com.example.app.entity.CustomerSession">
+		SELECT
+		customer_sessions_id AS customerSessionsId,
+		table_id AS tableId,
+		guest_count AS guestCount,
+		started_at AS startedAt,
+		ended_at AS endedAt,
+		is_paid AS isPaid,
+		total_amount AS totalAmount,
+		note
+		FROM customer_sessions
+		WHERE table_id = #{tableId}
+		AND ended_at IS NULL
+		LIMIT 1
+	</select>
+
+	<select id="findOrderItemsByTableId"
+		resultType="com.example.app.entity.OrderItem">
+		SELECT
+		oi.order_item_id AS orderItemId,
+		oi.order_id AS orderId,
+		oi.menu_item_id AS menuItemId,
+		oi.quantity,
+		oi.ordered_at AS orderedAt,
+		oi.is_canceled AS isCanceled,
+		oi.nickname,
+		oi.color_code AS colorCode,
+		oi.status,
+		oi.completed_by AS completedBy,
+		oi.served_by AS servedBy,
+		oi.completed_at AS completedAt,
+		oi.served_at AS servedAt
+		FROM order_items oi
+		JOIN orders o ON oi.order_id = o.order_id
+		JOIN customer_sessions cs ON o.session_id = cs.customer_sessions_id
+		WHERE cs.table_id = #{tableId}
+		AND cs.ended_at IS NULL
+		AND oi.is_canceled = false
+		AND oi.status = 2  <!-- 提供済み（status=2）のみ -->
+	</select>
 </mapper>

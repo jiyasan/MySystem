@@ -142,4 +142,43 @@
 		#{menuItemId}
 	</update>
 
+	<!-- メニュー表表示用 -->
+	<select id="findAllCategoriesByShopId"
+		resultType="com.example.app.entity.MenuCategory">
+		SELECT * FROM menu_categories
+		WHERE shop_id = #{shopId}
+		ORDER BY category_id
+	</select>
+
+	<select id="findAllSubcategoriesByShopId"
+		resultType="com.example.app.entity.MenuSubcategory">
+		SELECT * FROM menu_subcategories
+		WHERE shop_id = #{shopId}
+		ORDER BY subcategory_id
+	</select>
+
+	<select id="findAllItemDTOsByShopId"
+		resultType="com.example.app.dto.MenuItemDTO">
+		SELECT
+		menu_item_id AS menuItemId,
+		item_category AS itemCategory,
+		item_subcategory AS itemSubcategory,
+		item_name AS itemName,
+		item_detail
+		AS itemDetail,
+		item_image AS itemImage,
+		price,
+		note,
+		is_visible AS
+		isVisible,
+		is_orderable AS isOrderable,
+		stock_quantity AS stockQuantity
+		FROM menu_items
+		WHERE shop_id = #{shopId} OR shop_id = 0
+		ORDER BY item_category, item_subcategory, menu_item_id
+	</select>
+
+
+
+
 </mapper>

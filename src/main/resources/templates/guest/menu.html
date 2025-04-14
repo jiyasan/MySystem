@@ -1,69 +1,82 @@
 <!DOCTYPE html>
-<html lang="ja">
+<html xmlns:th="http://www.thymeleaf.org" lang="ja">
 
 <head>
-    <meta charset="UTF-8">
-    <title></title>
-    <link rel="stylesheet" href="../../static/css/bootstrap.min.css">
-    <link rel="stylesheet" href="../../static/css/admin_style.css">
+	<meta charset="UTF-8">
+	<title th:text="${shop.shopName} + ' メニュー'"></title>
+	<link rel="stylesheet" th:href="@{/css/bootstrap.min.css}" />
+	<link rel="stylesheet" th:href="@{/css/guest/menu.css}" />
 </head>
 
 <body>
+	<!-- ✅ ヘッダー：店名 + カート/会計 -->
+	<header class="d-flex justify-content-between align-items-center py-2 px-3 border-bottom">
+		<div class="fs-4 fw-bold" th:text="${shop.shopName}">TabelX</div>
+		<div>
+			<button class="btn btn-outline-primary btn-sm me-2" id="cart-button">カートを確認</button>
+			<button class="btn btn-outline-secondary btn-sm" id="bill-button">注文履歴/会計確認</button>
+		</div>
+	</header>
 
-    <header>
-        <div class="header-wrapper">
-            <div class="header-left">
-                <h1>DBから店の名前かロゴがここに・・・！</h1>
-            </div>
-            <div class="header-right"><a href="">カートを確認する</a>　<a href="">注文履歴/会計確認</a></div>
-        </div>
-    </header>
+	<!-- ✅ メッセージエリア -->
+	<div class="alert alert-info text-center my-2" th:if="${shop.message}" th:text="${shop.message}"></div>
 
-    <main>
+	<!-- ✅ ナビバー（大分類） -->
+	<nav class="nav nav-pills flex-nowrap overflow-auto px-2" id="category-navbar">
+		<a class="nav-link" th:each="cat : ${categories}" th:text="${cat.categoryName}" href="#"></a>
+	</nav>
 
-        <nav id="category" class="swipe-x">
-            <ul>
-                <li>ここは大分類リスト</li>
-                <li>実際にはDBから大分類の</li>
-                <li>テーブルをwhile文で</li>
-                <li>ループさせる</li>
-                <li>飲み物[今ここ]</li>
-                <li>食べ物</li>
-                <li>デザート</li>
-                <li>サービス</li>
-                <li>その他何かあれば</li>
-            </ul>
-        </nav>
+	<div class="d-flex">
+		<!-- ✅ サイドバー（中分類） -->
+		<aside class="bg-light p-2 border-end" style="width: 200px;" id="subcategory-sidebar">
+			<button class="btn btn-sm w-100 mb-1 text-start" th:each="sub : ${subcategories}"
+				th:text="${sub.subcategoryName}" data-sub-id="[[${sub.subcategoryId}]]"></button>
+		</aside>
 
-        <div id="subcategory" class="sidebar">
-            <ul>
-                <li>ここは中分類リスト</li>
-                <li>実際は大分類に紐づく</li>
-                <li>中分類テーブルを</li>
-                <li>while文でループさせる</li>
-                <li>ビール</li>
-                <li>ハイボール</li>
-                <li>焼酎</li>
-                <li>日本酒</li>
-                <li>果実酒・サワー</li>
-                <li>ソフトドリンク</li>
-            </ul>
-        </div>
+		<!-- ✅ メイン（商品パネル） -->
+		<main class="p-3" style="flex: 1;">
+			<div class="row" id="item-grid">
+				<!-- 商品カードの繰り返し（初期は大分類1中分類1） -->
+				<div class="col-6 mb-3" th:each="item : ${items}" th:if="${item.itemSubcategory} == 初期中分類ID">
+					<div class="card h-100">
+						<img th:src="@{'/uploads/items/' + ${item.itemImage}}" class="card-img-top"
+							th:alt="${item.itemName}" />
+						<div class="card-body">
+							<h5 class="card-title" th:text="${item.itemName}"></h5>
+							<p class="card-text" th:text="${item.itemDetail}"></p>
+							<div class="d-flex justify-content-between align-items-center">
+								<span class="fw-bold">\<span th:text="${item.price}"></span></span>
+								<div class="btn-group">
+									<button class="btn btn-sm btn-outline-secondary">−</button>
+									<button class="btn btn-sm btn-outline-secondary">＋</button>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</main>
+	</div>
 
-        <div class="item-list">
-            <div class="menu-item" id="">
-                <p>商品名がここに入る</p>
-                <p>商品説明がここに入るかも</p>
-                <p>価格：()円(税込)</p>
-                <img src="" alt="商品名がここに入ります">
-            </div>
-        </div>
+	<!-- ✅ 商品詳細ポップアップ（モーダル） -->
+	<div id="item-modal" class="modal fade" tabindex="-1">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title">商品詳細</h5>
+					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="閉じる"></button>
+				</div>
+				<div class="modal-body">
+					<!-- 詳細内容はJSで埋める -->
+				</div>
+			</div>
+		</div>
+	</div>
 
-    </main>
+	<!-- ✅ カートモーダル / 会計モーダルも後で追加予定 -->
 
-    <footer>
-        <p>&copy;フッターいらない説あるなこれ</p>
-    </footer>
+	<script th:src="@{/js/bootstrap.bundle.min.js}"></script>
+	<script th:src="@{/js/guest/menu.js}"></script>
 </body>
 
 </html>

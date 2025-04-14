@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="ja" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+	<meta charset="UTF-8">
+	<title>テーブル詳細</title>
+	<link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+	<link rel="stylesheet" th:href="@{/css/admin/style.css}">
+</head>
+
+<body>
+	<div class="container mt-1">
+		<!-- テーブル状態表示エリア -->
+		<div class="mb-3">
+			<h4>テーブル状態</h4>
+			<div class="alert"
+				th:classappend="${table.status == 'empty'} ? 'alert-success' : ${table.status == 'using'} ? 'alert-danger' : 'alert-warning'">
+				<span th:text="${table.status == 'empty'} ? '空席' : ${table.status == 'using'} ? '使用中' : '準備中'"></span>
+			</div>
+		</div>
+
+		<!-- テーブル情報表示エリア -->
+		<div class="mb-3">
+			<h4>テーブル情報</h4>
+			<dl class="row">
+				<dt class="col-sm-3">テーブルID</dt>
+				<dd class="col-sm-9" th:text="${table.tableId}"></dd>
+				<dt class="col-sm-3">テーブル名</dt>
+				<dd class="col-sm-9" th:text="${table.tableName}"></dd>
+				<dt class="col-sm-3">利用状況</dt>
+				<dd class="col-sm-9"
+					th:text="${table.status == 0} ? '空席 (0)' : ${table.status == 1} ? '使用中 (1)' : '準備中 (2)'"></dd>
+				<dt class="col-sm-3">人数</dt>
+				<dd class="col-sm-9" th:text="${session?.guest_count != null} ? ${session.guest_count} : '未設定'"></dd>
+				<dt class="col-sm-3">開始日時</dt>
+				<dd class="col-sm-9"
+					th:text="${session?.started_at != null} ? ${#temporals.format(session.started_at, 'yyyy-MM-dd HH:mm')} : '未設定'">
+				</dd>
+			</dl>
+		</div>
+
+		<!-- 注文履歴一覧表示エリア -->
+		<div class="mb-3">
+			<h4>注文履歴</h4>
+			<table class="table table-bordered">
+				<thead>
+					<tr>
+						<th>注文ID</th>
+						<th>商品ID</th>
+						<th>数量</th>
+						<th>注文日時</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr th:each="item : ${orderItems}">
+						<td th:text="${item.orderId}"></td>
+						<td th:text="${item.menuItemId}"></td>
+						<td th:text="${item.quantity}"></td>
+						<td th:text="${#temporals.format(item.orderedAt, 'yyyy-MM-dd HH:mm')}"></td>
+					</tr>
+					<tr th:if="${#lists.isEmpty(orderItems)}">
+						<td colspan="4" class="text-center">注文履歴なし</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+
+		<!-- 現在のお会計額表示エリア -->
+		<div class="mb-3">
+			<h4>現在のお会計額</h4>
+			<div class="alert alert-info">
+				<span>合計: </span>
+				<span th:text="${#numbers.formatCurrency(totalBill)} ?: '0円'"></span>
+			</div>
+		</div>
+
+		<!-- 戻るボタン -->
+		<div class="d-flex justify-content-start">
+			<a th:href="@{'/admin/' + ${shopId} + '_dashboard/workstation/table/list'}" data-tab-link data-view="table"
+				class="btn btn-outline-secondary">← テーブル一覧に戻る</a>
+		</div>
+	</div>
+
+	<!-- スクリプト（必要なら） -->
+	<script th:src="@{/js/bootstrap.bundle.min.js}"></script>
+	<!-- <script th:src="@{/js/admin/table_detail.js}" defer></script> -->
+</body>
+
+</html>
