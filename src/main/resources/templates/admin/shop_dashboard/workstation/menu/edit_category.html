@@ -1,12 +1,14 @@
 <!-- admin/shop_dashboard/workstation/menu/edit_category.html -->
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="ja">
+
 <head>
 	<meta charset="UTF-8">
 	<title>大分類を編集</title>
 	<link rel="stylesheet" th:href="@{/css/bootstrap.min.css}" />
 	<link rel="stylesheet" th:href="@{/css/admin/style.css}" />
 </head>
+
 <body>
 	<div class="container mt-1" style="max-width: 600px">
 		<h3 class="text-center mb-3">
@@ -17,14 +19,20 @@
 			※ メニューは <strong>大分類 → 中分類 → 商品</strong> の順で構成されます。
 		</p>
 
-		<form th:action="@{'/admin/' + ${shopId} + '_dashboard/workstation/menu/' + ${categoryId} + '/edit'}" method="post">
+		<form th:action="@{'/admin/' + ${shopId} + '_dashboard/workstation/menu/' + ${categoryId} + '/edit'}"
+			method="post">
 			<input type="hidden" name="shopId" th:value="${shopId}" />
 
 			<div class="mb-3">
 				<label for="categoryName" class="form-label">大分類名</label>
-				<input type="text" id="categoryName" name="categoryName"
-					class="form-control" th:value="${category.categoryName}" required />
+				<input type="text" id="categoryName" name="categoryName" class="form-control"
+					th:value="${category.categoryName}" required />
 			</div>
+			
+			<label>
+				<input type="checkbox" name="isFood" th:checked="${category != null and category.isFood}" />
+				フードカテゴリに分類する
+			</label>
 
 			<div class="d-flex justify-content-between">
 				<a th:href="@{'/admin/' + ${shopId} + '_dashboard/workstation/menu/list'}"
@@ -36,4 +44,5 @@
 
 	<script th:src="@{/js/bootstrap.bundle.min.js}"></script>
 </body>
+
 </html>

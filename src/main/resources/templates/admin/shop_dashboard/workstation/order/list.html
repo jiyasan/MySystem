@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ja">
+
+<head>
+	<meta charset="UTF-8" />
+	<title>オーダー一覧</title>
+	<link rel="stylesheet" th:href="@{/css/bootstrap.min.css}" />
+	<style>
+		.tab-btn-group {
+			display: flex;
+			width: 100%;
+		}
+
+		.tab-btn-group button {
+			flex: 1 1 33%;
+			font-size: 1.2rem;
+			padding: 1rem;
+		}
+
+		.tab-view {
+			display: none;
+		}
+
+		.tab-view.active {
+			display: block;
+		}
+	</style>
+</head>
+
+<body>
+	<div class="container mt-3">
+
+		<!-- ⚠️ テーブル未設定時 -->
+		<div th:if="${layoutItems != null and #lists.isEmpty(layoutItems.?[type == 'table'])}">
+			<div class="alert alert-warning text-center p-4">
+				<h5 class="mb-3">⚠️ まだ店舗に利用可能なテーブルが設定されていません</h5>
+				<p>テーブルレイアウトに「テーブル（type=table）」を追加してください。</p>
+				<a th:href="@{'/admin/' + ${shopId} + '_dashboard/layout'}" class="btn btn-primary mt-2">
+					テーブルレイアウトを設定する
+				</a>
+			</div>
+		</div>
+
+		<!-- 🔁 タブ切り替え -->
+		<div class="btn-group tab-btn-group mb-4" role="group">
+			<button type="button" class="btn btn-outline-primary active" data-target="all">全て</button>
+			<button type="button" class="btn btn-outline-primary" data-target="food">フード</button>
+			<button type="button" class="btn btn-outline-primary" data-target="drink">ドリンク</button>
+		</div>
+
+		<!-- 各タブ -->
+		<div id="tab-all" class="tab-view active">
+			<h5>全てのオーダー</h5>
+			<div th:replace="~{fragments/accordion :: accordion(orderMap=${allOrders}, accId='accordionAll')}"></div>
+		</div>
+
+		<div id="tab-food" class="tab-view">
+			<h5>フードオーダー</h5>
+			<div th:replace="~{fragments/accordion :: accordion(orderMap=${foodOrders}, accId='accordionFood')}"></div>
+		</div>
+
+		<div id="tab-drink" class="tab-view">
+			<h5>ドリンクオーダー</h5>
+			<div th:replace="~{fragments/accordion :: accordion(orderMap=${drinkOrders}, accId='accordionDrink')}">
+			</div>
+		</div>
+
+	</div>
+
+	<script th:src="@{/js/bootstrap.bundle.min.js}"></script>
+</body>
+
+</html>

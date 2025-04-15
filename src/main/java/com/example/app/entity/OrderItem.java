@@ -3,9 +3,11 @@ package com.example.app.entity;
 import java.time.LocalDateTime;
 
 public class OrderItem {
+
 	private int orderItemId;
 	private int orderId;
 	private int menuItemId;
+	private Integer itemCategory;
 	private int quantity;
 	private LocalDateTime orderedAt;
 	private boolean isCanceled;
@@ -16,6 +18,7 @@ public class OrderItem {
 	private Integer servedBy;
 	private LocalDateTime completedAt;
 	private LocalDateTime servedAt;
+	private Boolean isFood;
 
 	// ゲッターとセッター
 	public int getOrderItemId() {
@@ -120,5 +123,21 @@ public class OrderItem {
 
 	public void setServedAt(LocalDateTime servedAt) {
 		this.servedAt = servedAt;
+	}
+
+	public Boolean getIsFood() {
+		return isFood;
+	}
+
+	public void setIsFood(Boolean isFood) {
+		this.isFood = isFood;
+	}
+
+	public Integer getItemCategory() {
+		return itemCategory;
+	}
+
+	public void setItemCategory(Integer itemCategory) {
+		this.itemCategory = itemCategory;
 	}
 }

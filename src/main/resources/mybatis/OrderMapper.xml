@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- 正しい位置にコメントを書く -->
+<!-- resources/mybatis/OrderMapper.xml -->
+
+<mapper namespace="com.example.app.mapper.OrderMapper">
+
+	<select id="findOrdersByShopId" parameterType="int"
+		resultMap="orderWithItemsResultMap">
+		SELECT o.*, t.table_name
+		FROM orders o
+		JOIN customer_sessions cs ON o.session_id = cs.customer_sessions_id
+		JOIN tables t ON cs.table_id = t.table_id
+		WHERE o.shop_id = #{shopId}
+		ORDER BY o.ordered_at ASC
+	</select>
+
+	<resultMap id="orderWithItemsResultMap"
+		type="com.example.app.dto.OrderWithItemsDTO">
+		<id property="orderId" column="order_id" />
+		<result property="shopId" column="shop_id" />
+		<result property="sessionId" column="session_id" />
+		<result property="orderedAt" column="ordered_at" />
+		<result property="note" column="note" />
+		<result property="totalPrice" column="total_price" />
+		<result property="createdBy" column="created_by" />
+		<result property="tableName" column="table_name" />
+	</resultMap>
+
+	<select id="findOrdersByStatus"
+		resultType="com.example.app.entity.Order">
+		SELECT DISTINCT o.*
+		FROM orders o
+		JOIN order_items oi ON
+		o.order_id = oi.order_id
+		WHERE o.shop_id = #{shopId}
+		AND oi.status =
+		#{status}
+		ORDER BY o.ordered_at ASC
+	</select>
+
+	<select id="findOrderItemsWithCategory" parameterType="int"
+		resultType="com.example.app.entity.OrderItem">
+		SELECT
+		oi.order_item_id,
+		oi.order_id,
+		oi.menu_item_id,
+		oi.quantity,
+		oi.ordered_at,
+		oi.is_canceled,
+		oi.nickname,
+		oi.color_code,
+		oi.status,
+		oi.completed_by,
+		oi.served_by,
+		oi.completed_at,
+		oi.served_at,
+		mi.item_category,
+		mc.is_food
+		FROM order_items oi
+		JOIN menu_items mi ON
+		oi.menu_item_id = mi.menu_item_id
+		JOIN menu_categories mc ON
+		mi.item_category = mc.category_id
+		WHERE oi.order_id = #{orderId}
+	</select>
+
+</mapper>

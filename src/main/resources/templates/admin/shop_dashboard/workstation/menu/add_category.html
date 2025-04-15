@@ -26,6 +26,11 @@
 				<input type="text" id="categoryName" name="categoryName" class="form-control" required />
 			</div>
 
+			<label>
+				<input type="checkbox" name="isFood" th:checked="${category != null and category.isFood}" />
+				フードカテゴリに分類する
+			</label>
+
 			<div class="d-flex justify-content-between">
 				<a th:href="@{'/admin/' + ${shopId} + '_dashboard/workstation/menu/list'}"
 					class="btn btn-outline-secondary" data-tab-link data-view="menu">← 戻る</a>

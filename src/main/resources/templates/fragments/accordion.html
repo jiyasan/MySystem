@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ja">
+<th:block th:fragment="accordion(orderMap, accId)">
+	<div class="accordion mb-5" th:attr="id=${accId}">
+
+		<!-- 🔴 対応中 -->
+		<div class="accordion-item">
+			<h2 class="accordion-header">
+				<button class="accordion-button" type="button" th:attr="data-bs-target='#' + ${accId} + '_0'"
+					data-bs-toggle="collapse">
+					🔴 対応中オーダー
+				</button>
+			</h2>
+			<div class="accordion-collapse collapse show" th:id="${accId + '_0'}">
+				<div class="accordion-body">
+					<ul class="list-group" th:if="${orderMap[0] != null and !#lists.isEmpty(orderMap[0])}">
+						<li th:each="order : ${orderMap[0]}" class="list-group-item">
+							<strong th:text="${order?.tableName} ?: 'テーブル未設定'">テーブル</strong> /
+							<span th:text="${order?.itemName} ?: '商品不明'">商品</span> /
+							<span
+								th:text="${order?.orderedAt != null ? #temporals.format(order.orderedAt, 'HH:mm') : '--:--'}">--:--</span>
+							/
+							<span th:text="${order?.nickname} ?: '匿名'">注文者</span>
+							<button class="btn btn-sm btn-warning float-end">✅ 完成</button>
+						</li>
+					</ul>
+					<p th:if="${orderMap[0] == null or #lists.isEmpty(orderMap[0])}" class="text-muted">
+						現在対応中のオーダーはありません。</p>
+				</div>
+			</div>
+		</div>
+
+		<!-- 🟡 完成済 -->
+		<div class="accordion-item">
+			<h2 class="accordion-header">
+				<button class="accordion-button" type="button" th:attr="data-bs-target='#' + ${accId} + '_1'"
+					data-bs-toggle="collapse">
+					🟡 完成済オーダー
+				</button>
+			</h2>
+			<div class="accordion-collapse collapse show" th:id="${accId + '_1'}">
+				<div class="accordion-body">
+					<ul class="list-group" th:if="${orderMap[1] != null and !#lists.isEmpty(orderMap[1])}">
+						<li th:each="order : ${orderMap[1]}" class="list-group-item">
+							<strong th:text="${order?.tableName} ?: 'テーブル未設定'">テーブル</strong> /
+							<span th:text="${order?.itemName} ?: '商品不明'">商品</span> /
+							<span
+								th:text="${order?.completedAt != null ? #temporals.format(order.completedAt, 'HH:mm') : '--:--'}">--:--</span>
+							/
+							<span th:text="${order?.completedByName} ?: '未設定'">完了者</span>
+							<button class="btn btn-sm btn-success float-end">🚚 提供済みにする</button>
+						</li>
+					</ul>
+					<p th:if="${orderMap[1] == null or #lists.isEmpty(orderMap[1])}" class="text-muted">
+						現在完成済のオーダーはありません。</p>
+				</div>
+			</div>
+		</div>
+
+		<!-- 🟢 提供済 -->
+		<div class="accordion-item">
+			<h2 class="accordion-header">
+				<button class="accordion-button collapsed" type="button" th:attr="data-bs-target='#' + ${accId} + '_2'"
+					data-bs-toggle="collapse">
+					🟢 提供済オーダー
+				</button>
+			</h2>
+			<div class="accordion-collapse collapse" th:id="${accId + '_2'}">
+				<div class="accordion-body">
+					<ul class="list-group" th:if="${orderMap[2] != null and !#lists.isEmpty(orderMap[2])}">
+						<li th:each="order : ${orderMap[2]}" class="list-group-item">
+							<strong th:text="${order?.tableName} ?: 'テーブル未設定'">テーブル</strong> /
+							<span th:text="${order?.itemName} ?: '商品不明'">商品</span> /
+							<span
+								th:text="${order?.servedAt != null ? #temporals.format(order.servedAt, 'HH:mm') : '--:--'}">--:--</span>
+							/
+							<span th:text="${order?.servedByName} ?: '未設定'">提供者</span>
+						</li>
+					</ul>
+					<p th:if="${orderMap[2] == null or #lists.isEmpty(orderMap[2])}" class="text-muted">
+						現在提供済のオーダーはありません。</p>
+				</div>
+			</div>
+		</div>
+
+	</div>
+</th:block>
+
+</html>

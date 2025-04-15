@@ -3,6 +3,7 @@ package com.example.app.controller.admin;
 import java.io.File;
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -21,6 +22,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.example.app.dto.LayoutItem;
+import com.example.app.dto.OrderWithItemsDTO;
 import com.example.app.entity.CustomerSession;
 import com.example.app.entity.MenuCategory;
 import com.example.app.entity.MenuItem;
@@ -28,11 +30,14 @@ import com.example.app.entity.MenuSubcategory;
 import com.example.app.entity.OrderItem;
 import com.example.app.entity.Table;
 import com.example.app.mapper.MenuMapper;
+import com.example.app.mapper.OrderMapper;
 import com.example.app.mapper.TableMapper;
 import com.example.app.service.LayoutService;
 import com.example.app.service.MenuService;
+import com.example.app.service.OrderService;
 import com.example.app.service.ShopService;
 import com.example.app.util.NullSafeList;
+import com.example.app.util.OrderUtil;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -55,12 +60,19 @@ public class WorkstationController {
 	@Autowired
 	private MenuService menuService;
 
+	@Autowired
+	private OrderService orderService;
+
+	@Autowired
+	private OrderMapper orderMapper;
+
 	// テーブルレイアウト表示
 	@GetMapping("/table/list")
 	public String tableListPartial(@PathVariable("shopId") int shopId, Model model) throws JsonProcessingException {
 		try {
 			// 🔸 レイアウト情報取得
 			List<LayoutItem> layoutItems = layoutService.getLayoutWithStatus(shopId);
+			model.addAttribute("layoutItems", layoutItems);
 
 			System.out.println("🟠 layoutItems.size() = " + layoutItems.size());
 			for (LayoutItem item : layoutItems) {
@@ -83,7 +95,6 @@ public class WorkstationController {
 
 			// 🔸 モデルに渡す
 			model.addAttribute("shopId", shopId);
-			model.addAttribute("layoutItems", layoutItems);
 			model.addAttribute("tableIdMapJson", tableIdMapJson);
 			model.addAttribute("layoutItemsJson", layoutItemsJson); // ← 🔧これを追加
 
@@ -209,6 +220,9 @@ public class WorkstationController {
 	// 大分類追加画面表示
 	@GetMapping("/menu/add")
 	public String showAddCategory(@PathVariable("shopId") int shopId, Model model) {
+		MenuCategory dummy = new MenuCategory();
+		dummy.setIsFood(false); // デフォルト値
+		model.addAttribute("category", dummy);
 		model.addAttribute("shopId", shopId);
 		return "admin/shop_dashboard/workstation/menu/add_category";
 	}
@@ -245,10 +259,35 @@ public class WorkstationController {
 		return "admin/shop_dashboard/workstation/menu/add_item";
 	}
 
-	// オーダー一覧表示
+	// 🧾 オーダー一覧表示
 	@GetMapping("/order/list")
-	public String orderList(@PathVariable int shopId, Model model) {
+	public String showOrderList(
+			@PathVariable("shopId") int shopId,
+			Model model) {
+
+		// 🆕 追加：レイアウト取得（テーブル存在確認に使う）
+		List<LayoutItem> layoutItems = layoutService.getLayoutWithStatus(shopId);
+		model.addAttribute("layoutItems", layoutItems);
+
+		List<OrderWithItemsDTO> allOrders = orderService.findAllOrdersWithItems(shopId);
+		List<OrderWithItemsDTO> foodOrders = new ArrayList<>();
+		List<OrderWithItemsDTO> drinkOrders = new ArrayList<>();
+
+		for (OrderWithItemsDTO order : allOrders) {
+			boolean hasFood = order.getItems().stream().anyMatch(OrderItem::getIsFood);
+			boolean hasDrink = order.getItems().stream().anyMatch(item -> !item.getIsFood());
+
+			if (hasFood)
+				foodOrders.add(order);
+			if (hasDrink)
+				drinkOrders.add(order);
+		}
+
+		model.addAttribute("allOrders", OrderUtil.splitByStatus(allOrders));
+		model.addAttribute("foodOrders", OrderUtil.splitByStatus(foodOrders));
+		model.addAttribute("drinkOrders", OrderUtil.splitByStatus(drinkOrders));
 		model.addAttribute("shopId", shopId);
+
 		return "admin/shop_dashboard/workstation/order/list";
 	}
 
@@ -256,21 +295,24 @@ public class WorkstationController {
 
 	// 大分類追加処理
 	@PostMapping("/menu/add")
-
 	@ResponseBody
-	public Map<String, Object> addCategory(@RequestParam("shopId") int shopId,
-			@RequestParam("categoryName") String categoryName) {
+	public Map<String, Object> addCategory(
+			@RequestParam("shopId") int shopId,
+			@RequestParam("categoryName") String categoryName,
+			@RequestParam(name = "isFood", defaultValue = "false") boolean isFood // ← 追加
+	) {
 		Map<String, Object> response = new HashMap<>();
 		try {
 			MenuCategory category = new MenuCategory();
 			category.setShopId(shopId);
 			category.setCategoryName(categoryName);
+			category.setIsFood(isFood); // ← 追加
+
 			menuMapper.insertCategory(category);
 
 			response.put("success", true);
 			response.put("message", "大分類を追加しました");
-			response.put("redirectUrl", "/admin/" + shopId + "_dashboard/workstation/menu/list"); // メニューリストのURL
-
+			response.put("redirectUrl", "/admin/" + shopId + "_dashboard/workstation/menu/list");
 			return response;
 
 		} catch (Exception e) {
@@ -359,11 +401,13 @@ public class WorkstationController {
 	public String updateCategory(
 			@PathVariable("shopId") int shopId,
 			@PathVariable("categoryId") int categoryId,
-			@RequestParam("categoryName") String categoryName) {
-
+			@RequestParam("categoryName") String categoryName,
+			@RequestParam(name = "isFood", defaultValue = "false") boolean isFood // ← 追加
+	) {
 		MenuCategory category = new MenuCategory();
 		category.setCategoryId(categoryId);
 		category.setCategoryName(categoryName);
+		category.setIsFood(isFood); // ← 追加
 
 		menuMapper.updateCategory(category);
 		return "redirect:/admin/" + shopId + "_dashboard/workstation/menu/list";
