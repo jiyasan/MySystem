@@ -10,7 +10,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.example.app.entity.CustomerNickname;
 import com.example.app.entity.Shop;
+import com.example.app.mapper.CustomerNicknameMapper;
 import com.example.app.mapper.ShopMapper;
 import com.example.app.mapper.TableMapper;
 import com.example.app.service.CustomerSessionService;
@@ -36,12 +38,16 @@ public class GuestEntryController {
 	@Autowired
 	private ShopMapper shopMapper;
 
-	// 🚪 入店フォームの表示
+	@Autowired
+	private CustomerNicknameMapper nicknameMapper;
+
 	@GetMapping("/{tableId}")
 	public String showEntryForm(
 			@PathVariable("shopId") int shopId,
 			@PathVariable("tableId") int tableId,
-			Model model) {
+			Model model,
+			HttpServletRequest request,
+			HttpServletResponse response) {
 
 		Shop shop = shopMapper.findById(shopId);
 		model.addAttribute("shop", shop);
@@ -61,36 +67,61 @@ public class GuestEntryController {
 			return "guest/entry";
 		}
 
+		String deviceToken = getOrCreateDeviceToken(request, response);
+		System.out.println("[DEBUG] deviceToken: " + deviceToken);
+
+		String existingSessionId = customerSessionService.findOngoingSessionByTableAndDeviceToken(tableId, deviceToken);
+		System.out.println("[DEBUG] existingSessionId: " + existingSessionId);
+
+		boolean isRegistered = false;
+		if (existingSessionId != null) {
+			CustomerNickname already = nicknameMapper.findNicknameBySessionIdAndDeviceToken(existingSessionId,
+					deviceToken);
+			isRegistered = (already != null);
+			System.out.println("[DEBUG] nickname already registered: " + isRegistered);
+
+			if (isRegistered) {
+				System.out.println("[DEBUG] → 登録済みのため即リダイレクト");
+				return "redirect:/menu/" + existingSessionId;
+			}
+		}
+
+		boolean isExistingSession = (existingSessionId != null) && !isRegistered;
 		model.addAttribute("shopId", shopId);
 		model.addAttribute("tableId", tableId);
+		model.addAttribute("isExistingSession", isExistingSession);
+
+		System.out.println("[DEBUG] → isExistingSession flag set to: " + isExistingSession);
 		return "guest/entry";
 	}
 
-	// 📝 入店処理（セッション作成 or 再利用）
 	@PostMapping("/start")
 	public String startSession(
 			@PathVariable("shopId") int shopId,
 			@RequestParam("tableId") int tableId,
-			@RequestParam("guestCount") int guestCount,
+			@RequestParam(value = "guestCount", required = false, defaultValue = "1") int guestCount,
 			@RequestParam(name = "nickname", required = false) String nickname,
 			HttpServletRequest request,
 			HttpServletResponse response,
 			RedirectAttributes redirectAttributes) {
 
-		// 整合性チェック
 		int actualShopId = tableMapper.findShopIdByTableId(tableId);
 		if (actualShopId != shopId) {
 			redirectAttributes.addFlashAttribute("errorMessage", "不正なアクセスです");
 			return "redirect:/guest/" + shopId + "/entry/" + tableId;
 		}
 
-		// 🍪 deviceToken を取得 or 作成
 		String deviceToken = getOrCreateDeviceToken(request, response);
 
 		try {
-			// ✅ shopId を含めてセッション作成
-			String sessionId = customerSessionService.createSession(tableId, guestCount, nickname, deviceToken, shopId);
-			return "redirect:/menu/" + sessionId;
+			String sessionId = customerSessionService.findOngoingSessionByTable(tableId);
+			if (sessionId != null) {
+				customerSessionService.registerAdditionalGuest(sessionId, nickname, deviceToken);
+				return "redirect:/menu/" + sessionId;
+			} else {
+				sessionId = customerSessionService.createSession(tableId, guestCount, nickname, deviceToken, shopId);
+				return "redirect:/menu/" + sessionId;
+			}
 		} catch (Exception e) {
 			redirectAttributes.addFlashAttribute("errorMessage", "入店処理中にエラーが発生しました。店員にお声がけください。");
 			return "redirect:/guest/" + shopId + "/entry/" + tableId;

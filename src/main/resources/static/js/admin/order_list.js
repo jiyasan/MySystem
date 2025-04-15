@@ -1,22 +1,21 @@
-// static/js/admin/order_list.js
 function initOrderList() {
 	console.log("[initOrderList] 🧾 オーダータブ初期化OK！");
 
 	const buttons = document.querySelectorAll(".tab-btn-group button");
 	const views = document.querySelectorAll(".tab-view");
 
-	// タブごとの開いていたアコーディオンID（複数）を記録
-	const accordionState = {};
+	const accordionState = {}; // タブ単位で保持
 
 	buttons.forEach((btn) => {
 		btn.addEventListener("click", () => {
 			const target = btn.getAttribute("data-target");
 
-			// 📌 現在アクティブなタブで「開いてるアコーディオンのID」を全部保存
+			// 現在のタブで開いていた collapse ID を記録
 			const activeView = document.querySelector(".tab-view.active");
 			if (activeView) {
-				const openAccordions = Array.from(activeView.querySelectorAll(".accordion-collapse.show"));
-				accordionState[activeView.id] = openAccordions.map(acc => acc.id);
+				const openIds = Array.from(activeView.querySelectorAll(".accordion-collapse.show"))
+					.map(acc => acc.id);
+				accordionState[activeView.id] = openIds;
 			}
 
 			// タブ切り替え
@@ -25,18 +24,17 @@ function initOrderList() {
 			if (targetView) {
 				targetView.classList.add("active");
 
-				// 💡 保存された複数のアコーディオンを開く
-				const prevOpenIds = accordionState[`tab-${target}`] || [];
-				const allAccordions = targetView.querySelectorAll(".accordion-collapse");
-				allAccordions.forEach(acc => acc.classList.remove("show")); // 全閉じ
-
-				prevOpenIds.forEach(id => {
-					const acc = targetView.querySelector(`#${id}`);
-					if (acc) acc.classList.add("show");
+				// 過去に開いていたIDだけ再度 .show を追加（それ以外は触らない）
+				const openIds = accordionState[`tab-${target}`] || [];
+				openIds.forEach(id => {
+					const acc = document.getElementById(id);
+					if (acc && !acc.classList.contains("show")) {
+						acc.classList.add("show");
+					}
 				});
 			}
 
-			// ボタン状態切替
+			// ボタン切り替え
 			buttons.forEach((b) => b.classList.remove("active"));
 			btn.classList.add("active");
 		});

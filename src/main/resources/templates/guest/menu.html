@@ -9,7 +9,7 @@
 </head>
 
 <body>
-	<!-- ✅ ヘッダー：店名 + カート/会計 -->
+	<!-- ✅ ヘッダー -->
 	<header class="d-flex justify-content-between align-items-center py-2 px-3 border-bottom">
 		<div class="fs-4 fw-bold" th:text="${shop.shopName}">TabelX</div>
 		<div>
@@ -18,47 +18,26 @@
 		</div>
 	</header>
 
-	<!-- ✅ メッセージエリア -->
+	<!-- ✅ メッセージ表示 -->
 	<div class="alert alert-info text-center my-2" th:if="${shop.message}" th:text="${shop.message}"></div>
 
 	<!-- ✅ ナビバー（大分類） -->
 	<nav class="nav nav-pills flex-nowrap overflow-auto px-2" id="category-navbar">
-		<a class="nav-link" th:each="cat : ${categories}" th:text="${cat.categoryName}" href="#"></a>
+		<a class="nav-link" th:each="cat : ${categories}" th:text="${cat.categoryName}"
+			th:attr="data-category-id=${cat.categoryId}" href="#"></a>
 	</nav>
 
 	<div class="d-flex">
 		<!-- ✅ サイドバー（中分類） -->
-		<aside class="bg-light p-2 border-end" style="width: 200px;" id="subcategory-sidebar">
-			<button class="btn btn-sm w-100 mb-1 text-start" th:each="sub : ${subcategories}"
-				th:text="${sub.subcategoryName}" data-sub-id="[[${sub.subcategoryId}]]"></button>
-		</aside>
+		<aside class="bg-light p-2 border-end" style="width: 200px;" id="subcategory-sidebar"></aside>
 
-		<!-- ✅ メイン（商品パネル） -->
+		<!-- ✅ 商品パネル -->
 		<main class="p-3" style="flex: 1;">
-			<div class="row" id="item-grid">
-				<!-- 商品カードの繰り返し（初期は大分類1中分類1） -->
-				<div class="col-6 mb-3" th:each="item : ${items}" th:if="${item.itemSubcategory} == 初期中分類ID">
-					<div class="card h-100">
-						<img th:src="@{'/uploads/items/' + ${item.itemImage}}" class="card-img-top"
-							th:alt="${item.itemName}" />
-						<div class="card-body">
-							<h5 class="card-title" th:text="${item.itemName}"></h5>
-							<p class="card-text" th:text="${item.itemDetail}"></p>
-							<div class="d-flex justify-content-between align-items-center">
-								<span class="fw-bold">\<span th:text="${item.price}"></span></span>
-								<div class="btn-group">
-									<button class="btn btn-sm btn-outline-secondary">−</button>
-									<button class="btn btn-sm btn-outline-secondary">＋</button>
-								</div>
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>
+			<div class="row" id="menu-panel"></div>
 		</main>
 	</div>
 
-	<!-- ✅ 商品詳細ポップアップ（モーダル） -->
+	<!-- ✅ 商品詳細モーダル -->
 	<div id="item-modal" class="modal fade" tabindex="-1">
 		<div class="modal-dialog">
 			<div class="modal-content">
@@ -72,8 +51,6 @@
 			</div>
 		</div>
 	</div>
-
-	<!-- ✅ カートモーダル / 会計モーダルも後で追加予定 -->
 
 	<script th:src="@{/js/bootstrap.bundle.min.js}"></script>
 	<script th:src="@{/js/guest/menu.js}"></script>

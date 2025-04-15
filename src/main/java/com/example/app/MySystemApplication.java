@@ -5,7 +5,10 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-@MapperScan("com.example.app.mapper")
+@MapperScan({
+    "com.example.app.mapper",
+    "com.example.app.viewer.menu.mapper"
+})
 public class MySystemApplication {
 
 	public static void main(String[] args) {

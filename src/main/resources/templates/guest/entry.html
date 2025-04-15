@@ -12,15 +12,16 @@
 		ようこそ！<span class="h2" th:text="${shop.shopName} + 'へ'">店舗へ</span>
 	</h2>
 
-
 	<form th:action="@{'/guest/' + ${shopId} + '/entry/start'}" method="post" class="mx-auto" style="max-width: 400px;">
 		<input type="hidden" name="tableId" th:value="${tableId}" />
 
-		<div class="mb-3">
+		<!-- 🔽 代表者のみ表示：人数入力欄 -->
+		<div class="mb-3" th:if="${!isExistingSession}">
 			<label for="guestCount" class="form-label">ご利用人数 <span class="text-danger">*</span></label>
 			<input type="number" name="guestCount" id="guestCount" class="form-control" min="1" required />
 		</div>
 
+		<!-- 全員共通：ニックネーム -->
 		<div class="mb-3">
 			<label for="nickname" class="form-label">ニックネーム（任意）</label>
 			<input type="text" name="nickname" id="nickname" class="form-control" placeholder="呼び名やあだ名（なくてもOK）" />
