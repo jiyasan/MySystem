@@ -20,15 +20,15 @@ public class OrderServiceImpl implements OrderService {
 	@Override
 	public List<OrderWithItemsDTO> findAllOrdersWithItems(int shopId) {
 		List<OrderWithItemsDTO> orders = orderMapper.findOrdersByShopId(shopId);
-		
+
 		for (OrderWithItemsDTO order : orders) {
 			List<OrderItem> items = orderMapper.findOrderItemsWithCategory(order.getOrderId());
 			order.setItems(items);
 		}
-		
+
 		return orders;
 	}
-	
+
 	@Override
 	public List<Order> findUnstartedOrders(int shopId) {
 		return orderMapper.findOrdersByStatus(shopId, 0); // 対応中
@@ -43,5 +43,27 @@ public class OrderServiceImpl implements OrderService {
 	public List<Order> findDoneOrders(int shopId) {
 		return orderMapper.findOrdersByStatus(shopId, 2); // 提供済
 	}
-	
+
+	@Override
+	public void createOrder(OrderWithItemsDTO dto) {
+		System.out.println("📦 createOrder(): sessionId = " + dto.getSessionId());
+
+		Order order = new Order();
+		order.setSessionId(dto.getSessionId());
+		order.setShopId(dto.getShopId());
+		order.setNote(dto.getNote());
+		order.setCreatedBy(dto.getCreatedBy());
+		order.setTotalPrice(dto.getTotalPrice());
+		order.setOrderedAt(java.time.LocalDateTime.now());
+
+		orderMapper.insertOrder(order);
+		System.out.println("✅ order_id = " + order.getOrderId());
+
+		for (OrderItem item : dto.getItems()) {
+			item.setOrderId(order.getOrderId());
+			item.setOrderedAt(order.getOrderedAt());
+			orderMapper.insertOrderItem(item);
+		}
+	}
+
 }

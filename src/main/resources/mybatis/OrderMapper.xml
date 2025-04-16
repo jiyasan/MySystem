@@ -12,10 +12,13 @@
 		resultMap="orderWithItemsResultMap">
 		SELECT o.*, t.table_name
 		FROM orders o
-		JOIN customer_sessions cs ON o.session_id = cs.customer_sessions_id
-		JOIN tables t ON cs.table_id = t.table_id
+		JOIN customer_sessions
+		cs ON o.session_id = cs.customer_sessions_id
+		JOIN tables t ON
+		cs.table_id = t.table_id
 		WHERE o.shop_id = #{shopId}
-		ORDER BY o.ordered_at ASC
+		ORDER BY
+		o.ordered_at ASC
 	</select>
 
 	<resultMap id="orderWithItemsResultMap"
@@ -67,5 +70,47 @@
 		mi.item_category = mc.category_id
 		WHERE oi.order_id = #{orderId}
 	</select>
+	<!-- OrderMapper.xml の末尾あたりに追記 -->
+
+	<insert id="insertOrder"
+		parameterType="com.example.app.entity.Order" useGeneratedKeys="true"
+		keyProperty="orderId">
+		INSERT INTO orders (
+		shop_id,
+		session_id,
+		ordered_at,
+		note,
+		total_price,
+		created_by
+		) VALUES (
+		#{shopId},
+		#{sessionId},
+		#{orderedAt},
+		#{note},
+		#{totalPrice},
+		#{createdBy}
+		)
+	</insert>
+
+	<insert id="insertOrderItem"
+		parameterType="com.example.app.entity.OrderItem">
+		INSERT INTO order_items (
+		order_id,
+		menu_item_id,
+		quantity,
+		ordered_at,
+		nickname,
+		color_code,
+		status
+		) VALUES (
+		#{orderId},
+		#{menuItemId},
+		#{quantity},
+		#{orderedAt},
+		#{nickname},
+		#{colorCode},
+		#{status}
+		)
+	</insert>
 
 </mapper>

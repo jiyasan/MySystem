@@ -1,4 +1,19 @@
-const cart = {};
+const cart = {};                   // ← すでにあるカートオブジェクト
+
+// 1. カートモーダルを開いた瞬間のアイテムID一覧を保存しておく
+let cartSnapshotIds = new Set();
+
+document.getElementById('cart-button').addEventListener('click', () => {
+	// snapshot を作成（この時点で存在してた商品IDだけ記録）
+	cartSnapshotIds = new Set(
+		Object.entries(cart)
+			.filter(([_, { quantity }]) => quantity > 0)
+			.map(([id]) => id)
+	);
+
+	renderCartModal();
+	new bootstrap.Modal(document.getElementById('cart-modal')).show();
+});
 
 function addToCart(item) {
 	if (!cart[item.id]) cart[item.id] = { item: item, quantity: 0 };
@@ -63,13 +78,21 @@ function renderSubcategories(subs) {
 	const sidebar = document.getElementById("subcategory-sidebar");
 	sidebar.innerHTML = '';
 	subs.forEach(sub => {
-		const btn = document.createElement("button");
-		btn.textContent = sub.name;
-		btn.classList.add("btn", "btn-light", "w-100", "border", "mb-1");
-		btn.onclick = () => filterItemsBySubcategory(sub.id);
-		sidebar.appendChild(btn);
+		const link = document.createElement("a");
+		link.textContent = sub.name;
+		link.href = "#";
+		link.classList.add("d-block", "text-decoration-none", "py-1", "px-2", "border-bottom", "text-dark");
+		link.setAttribute("data-sub-id", sub.id);
+
+		link.addEventListener("click", e => {
+			e.preventDefault();
+			filterItemsBySubcategory(sub.id);
+		});
+
+		sidebar.appendChild(link);
 	});
 }
+
 
 function filterItemsBySubcategory(subId) {
 	const cards = document.querySelectorAll('#menu-panel .col-6');
@@ -118,14 +141,19 @@ function renderCartModal() {
 	const container = document.getElementById('cart-content');
 	if (!container) return;
 
-	const items = Object.values(cart).filter(({ quantity }) => quantity > 0);
-	if (items.length === 0) {
+	// 全商品対象、quantity 0含む
+	const items = Object.values(cart);
+
+	if (items.length === 0 || !Object.keys(cart).some(id => cartSnapshotIds.has(id))) {
 		container.innerHTML = '<p>カートが空です。</p>';
 		return;
 	}
 
 	let html = '<ul class="list-group">';
 	items.forEach(({ item, quantity }) => {
+		// ✅ 表示条件：カートスナップショット時に存在していた or quantity > 0
+		if (quantity <= 0 && !cartSnapshotIds.has(String(item.id))) return;
+
 		html += `
 			<li class="list-group-item d-flex justify-content-between align-items-center">
 				<div>
@@ -141,8 +169,17 @@ function renderCartModal() {
 		`;
 	});
 	html += '</ul>';
+
+	html += `
+		<div class="mt-3 text-end">
+			<button class="btn btn-success" onclick="submitOrder()">✅ 注文を送信する</button>
+		</div>
+	`;
+
 	container.innerHTML = html;
 }
+
+
 
 function addToCartAndRender(id) {
 	addToCart(window._debugItems.find(i => i.id === id));
@@ -180,6 +217,45 @@ function updateSubcategoriesAndItems(categoryId) {
 		});
 }
 
+function initCategoryScrollWatcher() {
+	const navbar = document.getElementById('category-navbar');
+	if (!navbar) return;
+
+	let timeoutId = null;
+
+	navbar.addEventListener('scroll', () => {
+		if (timeoutId) clearTimeout(timeoutId);
+
+		timeoutId = setTimeout(() => {
+			const children = [...navbar.children];
+			const leftEdge = navbar.scrollLeft;
+
+			let closest = null;
+			let minDist = Infinity;
+
+			for (const el of children) {
+				const dist = Math.abs(el.offsetLeft - leftEdge);
+				if (dist < minDist) {
+					closest = el;
+					minDist = dist;
+				}
+			}
+
+			if (closest) {
+				children.forEach(el => el.classList.remove('active'));
+				closest.classList.add('active');
+
+				const categoryId = closest.getAttribute('data-category-id');
+				if (categoryId) {
+					updateSubcategoriesAndItems(categoryId);
+				}
+			}
+		}, 100); // 遅延で発火
+	});
+}
+
+
+
 window.addEventListener('DOMContentLoaded', () => {
 	const firstCategory = document.querySelector('#category-navbar .nav-link');
 	if (firstCategory) {
@@ -195,3 +271,78 @@ window.addEventListener('DOMContentLoaded', () => {
 		});
 	});
 });
+
+window.submitOrder = function () {
+	const sessionId = document.body.dataset.sessionId;
+	const shopId = Number(document.body.dataset.shopId);
+	const createdBy = document.body.dataset.nickname || "anonymous";
+	const note = prompt("注文にメモがあれば入力してください：", "");
+
+	const items = Object.values(cart)
+		.filter(({ quantity }) => quantity > 0)
+		.map(({ item, quantity }) => ({
+			menuItemId: item.id,
+			quantity,
+			nickname: createdBy,
+			colorCode: document.body.dataset.nicknameColor || "#999",
+			status: 0
+		}));
+
+	if (items.length === 0) {
+		alert("カートが空です");
+		return;
+	}
+
+	const totalPrice = items.reduce((sum, item) => {
+		const found = window._debugItems.find(i => i.id === item.menuItemId);
+		return sum + (found ? found.price * item.quantity : 0);
+	}, 0);
+
+	const payload = {
+		sessionId,
+		shopId,
+		note: note || "",
+		createdBy,
+		totalPrice,
+		items
+	};
+
+	fetch('/guest/api/order', {
+		method: 'POST',
+		headers: { 'Content-Type': 'application/json' },
+		body: JSON.stringify(payload)
+	})
+	.then(res => {
+		if (!res.ok) throw new Error("送信失敗");
+		return res.text();
+	})
+	.then(()=> {
+		alert("✅ 注文を送信しました！");
+		Object.keys(cart).forEach(key => delete cart[key]);
+		updateQuantityDisplays();
+		renderCartModal();
+
+const modalEl = document.getElementById('cart-modal');
+const modal = bootstrap.Modal.getInstance(modalEl);
+if (modal) {
+	modal.hide();
+} 
+
+// ✅ モーダルを閉じる処理のあとにコレ入れる（submitOrderの.then内）
+setTimeout(() => {
+	document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
+	document.body.classList.remove('modal-open');
+	document.body.style = ""; // ← 余計なスタイル解除
+}, 300); // アニメーション完了を待つ
+
+	})
+	.catch(err => {
+		alert("❌ 注文送信中にエラーが発生しました");
+		console.error(err);
+	});
+}
+
+window.addEventListener('DOMContentLoaded', () => {
+	initCategoryScrollWatcher();
+});
+

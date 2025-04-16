@@ -14,9 +14,13 @@
 			大分類を追加<br />
 			<span class="text-danger small">※メニューに表示される大分類名です</span>
 		</h3>
+
 		<p class="text-muted text-center small">
 			※ メニューは <strong>大分類 → 中分類 → 商品</strong> の順で構成されます。
 		</p>
+
+		<!-- ✅ エラー表示エリア -->
+		<div id="form-error-message" class="alert alert-danger d-none" role="alert"></div>
 
 		<form id="categoryForm" th:action="@{'/admin/' + ${shopId} + '_dashboard/workstation/menu/add'}" method="post">
 			<input type="hidden" name="shopId" th:value="${shopId}" />
@@ -34,20 +38,16 @@
 			<div class="d-flex justify-content-between">
 				<a th:href="@{'/admin/' + ${shopId} + '_dashboard/workstation/menu/list'}"
 					class="btn btn-outline-secondary" data-tab-link data-view="menu">← 戻る</a>
-
 				<button type="button" id="submitForm" class="btn btn-primary">登録する</button>
 			</div>
 		</form>
 	</div>
 
-	<!-- ✅ JavaScript：fetch送信＆タブ内反映 -->
+	<!-- ✅ JS処理 -->
 	<script>
 		window.addEventListener("DOMContentLoaded", () => {
 			const btn = document.getElementById("submitForm");
 			const form = document.getElementById("categoryForm");
-
-			console.log("[DEBUG] btn:", btn);
-			console.log("[DEBUG] form:", form);
 
 			if (!btn || !form) return;
 
@@ -56,8 +56,8 @@
 
 				const formData = new FormData(form);
 				const shopId = formData.get("shopId");
+				const errorBox = document.getElementById("form-error-message");
 
-				// fetch でフォーム送信（POST）
 				fetch(form.action, {
 					method: "POST",
 					body: formData
@@ -69,6 +69,8 @@
 					.then(res => res.text())
 					.then(html => {
 						const area = document.getElementById("tab-content-area");
+						if (!area) throw new Error("タブエリアが見つかりません");
+
 						area.innerHTML = html;
 
 						const script = document.createElement("script");
@@ -77,11 +79,19 @@
 						document.body.appendChild(script);
 					})
 					.catch(err => {
-						alert("エラー: " + err.message);
+						console.error("[ERROR]", err);
+						if (errorBox) {
+							errorBox.textContent = `エラーが発生しました: ${err.message}`;
+							errorBox.classList.remove("d-none");
+						} else {
+							alert("エラー: " + err.message);
+						}
 					});
 			});
 		});
 	</script>
+	<script th:src="@{/js/bootstrap.bundle.min.js}"></script>
+
 </body>
 
 </html>

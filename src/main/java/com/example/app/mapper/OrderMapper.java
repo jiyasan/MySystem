@@ -11,6 +11,9 @@ import com.example.app.entity.Order;
 import com.example.app.entity.OrderItem;
 
 public interface OrderMapper {
+	
+	void insertOrder(@Param("order") Order order);
+	void insertOrderItem(@Param("item") OrderItem item);
 
     // ステータスごとの取得（既存）
     List<Order> findOrdersByStatus(@Param("shopId") int shopId, @Param("status") int status);

@@ -1,5 +1,3 @@
-// /js/admin/workstation-app.js
-
 import { TabManager } from "./tab-manager.js";
 
 // ✅ DOM構成での表示対象コンテナ
@@ -63,7 +61,26 @@ window.addEventListener("DOMContentLoaded", () => {
 				manager.tabContainer.innerHTML = "";
 				manager.tabContainer.appendChild(wrapper);
 				tab.currentNode = wrapper;
-				manager._runInit(view);
+
+				// ✅ 編集：描画後に初期化を遅延実行（DOM確定後）
+				requestAnimationFrame(() => {
+					console.log("[DEBUG] DOM rendering completed, calling _runInit:", view);
+					manager._runInit(view);
+				});
+
+
+				// ✅ 動的 import（フォーム用JSなど）
+				if (target.href.includes("/menu/add")) {
+					import("/js/admin/category_form.js")
+						.then(mod => mod.initCategoryForm?.())
+						.catch(err => console.error("initCategoryForm 読み込み失敗", err));
+				}
+
+				if (target.href.includes("/menu/") && target.href.includes("/edit")) {
+					import("/js/admin/edit_category_form.js")
+						.then(mod => mod.initEditCategoryForm?.())
+						.catch(err => console.error("initEditCategoryForm 読み込み失敗", err));
+				}
 			})
 			.catch(err => {
 				console.error("[Tab内遷移失敗]", err);

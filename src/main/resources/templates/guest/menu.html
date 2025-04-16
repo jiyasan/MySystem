@@ -8,7 +8,13 @@
 	<link rel="stylesheet" th:href="@{/css/guest/menu.css}" />
 </head>
 
-<body>
+<body
+  th:data-session-id="${sessionId}"
+  th:data-shop-id="${shop.shopId}"
+  th:data-nickname="${nickname}"
+  th:data-nickname-color="${nicknameColor}">
+
+
 	<header class="d-flex justify-content-between align-items-center py-2 px-3 border-bottom">
 		<div class="fs-4 fw-bold" th:text="${shop.shopName}">店舗名</div>
 		<div>
@@ -17,10 +23,10 @@
 		</div>
 	</header>
 
-	<div id="info-message" class="alert alert-info text-center my-2" th:if="${shop.message}" th:text="${shop.message}">
+	<div id="info-message" class="alert alert-info text-center" th:if="${shop.message}" th:text="${shop.message}">
 	</div>
 
-	<nav class="nav nav-pills flex-nowrap overflow-auto px-2 border-bottom" id="category-navbar">
+	<nav class="nav nav-pills flex-nowrap overflow-auto border-bottom" id="category-navbar">
 		<a class="nav-link" th:each="cat : ${categories}" th:text="${cat.categoryName}"
 			th:attr="data-category-id=${cat.categoryId}" href="#"></a>
 	</nav>
@@ -33,22 +39,22 @@
 
 		<!-- ✅ 商品表示エリア -->
 		<div class="col-10">
-			<div class="row gx-0" id="menu-panel">
+			<div id="menu-panel" class="row g-0">
 				<!-- 商品カード（JS生成） -->
 			</div>
 		</div>
 	</div>
 
-	<!-- ✅ 商品詳細モーダル -->
-	<div id="item-modal" class="modal fade" tabindex="-1">
-		<div class="modal-dialog">
-			<div class="modal-content">
-				<div class="modal-header">
+	<!-- 商品詳細モーダル -->
+	<div class="modal fade" id="item-modal" tabindex="-1">
+		<div class="modal-dialog modal-dialog-centered">
+			<div class="modal-content rounded-0">
+				<div class="modal-header border-0">
 					<h5 class="modal-title">商品詳細</h5>
 					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="閉じる"></button>
 				</div>
 				<div class="modal-body">
-					<!-- JSで中身を表示 -->
+					<!-- 内容はJSで生成 -->
 				</div>
 			</div>
 		</div>
