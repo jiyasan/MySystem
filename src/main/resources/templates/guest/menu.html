@@ -3,38 +3,40 @@
 
 <head>
 	<meta charset="UTF-8">
-	<title th:text="${shop.shopName} + ' メニュー'"></title>
+	<title th:text="${shop.shopName} + ' メニュー'">メニュー</title>
 	<link rel="stylesheet" th:href="@{/css/bootstrap.min.css}" />
 	<link rel="stylesheet" th:href="@{/css/guest/menu.css}" />
 </head>
 
 <body>
-	<!-- ✅ ヘッダー -->
 	<header class="d-flex justify-content-between align-items-center py-2 px-3 border-bottom">
-		<div class="fs-4 fw-bold" th:text="${shop.shopName}">TabelX</div>
+		<div class="fs-4 fw-bold" th:text="${shop.shopName}">店舗名</div>
 		<div>
 			<button class="btn btn-outline-primary btn-sm me-2" id="cart-button">カートを確認</button>
 			<button class="btn btn-outline-secondary btn-sm" id="bill-button">注文履歴/会計確認</button>
 		</div>
 	</header>
 
-	<!-- ✅ メッセージ表示 -->
-	<div class="alert alert-info text-center my-2" th:if="${shop.message}" th:text="${shop.message}"></div>
+	<div id="info-message" class="alert alert-info text-center my-2" th:if="${shop.message}" th:text="${shop.message}">
+	</div>
 
-	<!-- ✅ ナビバー（大分類） -->
-	<nav class="nav nav-pills flex-nowrap overflow-auto px-2" id="category-navbar">
+	<nav class="nav nav-pills flex-nowrap overflow-auto px-2 border-bottom" id="category-navbar">
 		<a class="nav-link" th:each="cat : ${categories}" th:text="${cat.categoryName}"
 			th:attr="data-category-id=${cat.categoryId}" href="#"></a>
 	</nav>
 
-	<div class="d-flex">
+	<div class="row gx-0">
 		<!-- ✅ サイドバー（中分類） -->
-		<aside class="bg-light p-2 border-end" style="width: 200px;" id="subcategory-sidebar"></aside>
+		<aside class="col-2 bg-light border-end p-2" id="subcategory-sidebar">
+			<!-- 中分類ボタンがJSで生成 -->
+		</aside>
 
-		<!-- ✅ 商品パネル -->
-		<main class="p-3" style="flex: 1;">
-			<div class="row" id="menu-panel"></div>
-		</main>
+		<!-- ✅ 商品表示エリア -->
+		<div class="col-10">
+			<div class="row gx-0" id="menu-panel">
+				<!-- 商品カード（JS生成） -->
+			</div>
+		</div>
 	</div>
 
 	<!-- ✅ 商品詳細モーダル -->
@@ -46,7 +48,22 @@
 					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="閉じる"></button>
 				</div>
 				<div class="modal-body">
-					<!-- 詳細内容はJSで埋める -->
+					<!-- JSで中身を表示 -->
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- ✅ カートモーダル -->
+	<div id="cart-modal" class="modal fade" tabindex="-1">
+		<div class="modal-dialog modal-lg">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title">カートの中身</h5>
+					<button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+				</div>
+				<div class="modal-body" id="cart-content">
+					<!-- JSで描画 -->
 				</div>
 			</div>
 		</div>

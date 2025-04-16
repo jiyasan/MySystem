@@ -100,16 +100,19 @@
 		) VALUES (
 		#{shopId},
 		#{itemCategory}, #{itemSubcategory}, #{itemName}, #{itemDetail},
-		#{itemImage}, #{price}, #{note}, #{visible}, #{orderable},
+		#{itemImage}, #{price}, #{note},
+		#{isVisible}, #{isOrderable},   <!-- 修正ここ -->
 		#{stockQuantity}
 		)
 	</insert>
+
 
 	<!-- 大分類編集 -->
 	<update id="updateCategory"
 		parameterType="com.example.app.entity.MenuCategory">
 		UPDATE menu_categories
-		SET category_name = #{categoryName},
+		SET category_name =
+		#{categoryName},
 		is_food = #{isFood}
 		WHERE category_id = #{categoryId}
 	</update>
@@ -130,20 +133,21 @@
 		UPDATE menu_items
 		SET
 		item_category = #{itemCategory},
-		item_subcategory = #{itemSubcategory},
+		item_subcategory =
+		#{itemSubcategory},
 		item_name = #{itemName},
-		item_detail = #{itemDetail},
+		item_detail =
+		#{itemDetail},
 		item_image = #{itemImage},
-		price =
-		#{price},
-		note = #{note},
-		is_visible = #{visible},
-		is_orderable =
-		#{orderable},
+		price = #{price},
+		note =
+		#{note},
+		is_visible = #{isVisible},        <!-- 修正ここ -->
+		is_orderable = #{isOrderable},    <!-- 修正ここ -->
 		stock_quantity = #{stockQuantity}
-		WHERE menu_item_id =
-		#{menuItemId}
+		WHERE menu_item_id = #{menuItemId}
 	</update>
+
 
 	<!-- メニュー表表示用 -->
 	<select id="findAllCategoriesByShopId"
@@ -183,5 +187,5 @@
 		WHERE shop_id = #{shopId} OR shop_id = 0
 		ORDER BY item_category, item_subcategory, menu_item_id
 	</select>
-	
+
 </mapper>

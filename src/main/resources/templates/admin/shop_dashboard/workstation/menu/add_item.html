@@ -81,11 +81,10 @@
 						<div th:each="img : ${imageList}" class="d-inline-block m-1">
 							<label class="d-block text-center">
 								<input type="radio" name="selectedImage" th:value="${img}" class="form-check-input" />
-								<img th:src="@{'/uploads/menu/0/' + ${img}}" class="img-thumbnail"
+								<img th:src="@{'/uploads/menu/' + ${shopId} + '/' + ${img}}" class="img-thumbnail"
 									style="height: 80px;" />
 							</label>
 						</div>
-						<input type="hidden" name="selectedImageName" id="selectedImageName" />
 					</div>
 
 					<!-- 🔍 プレビュー -->
@@ -111,7 +110,7 @@
 				<!-- ⏎ 戻る・登録 -->
 				<div class="d-flex justify-content-between">
 					<a th:href="@{'/admin/' + ${shopId} + '_dashboard/workstation/menu/list'}"
-						class="btn btn-outline-secondary">← 戻る</a>
+						class="btn btn-outline-secondary" data-tab-link data-view="menu">← 戻る</a>
 					<button type="submit" class="btn btn-primary">登録する</button>
 				</div>
 			</form>

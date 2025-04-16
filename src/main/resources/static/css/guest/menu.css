@@ -1,0 +1,24 @@
+@charset "UTF-8";
+
+.card {
+	min-height: 240px;
+}
+
+.card-img-top {
+	aspect-ratio: 4 / 3;
+	object-fit: cover;
+	background-color: #eee;
+}
+
+.cart-buttons-overlay {
+	position: absolute;
+	top: 0.3rem;
+	right: 0.5rem;
+	z-index: 2;
+	display: flex;
+	align-items: center;
+	background: rgba(255, 255, 255, 0.75);
+	/* 背景付きでも可 */
+	border-radius: 5px;
+	padding: 2px 4px;
+}

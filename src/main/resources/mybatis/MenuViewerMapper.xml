@@ -3,19 +3,23 @@
   PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="com.example.app.viewer.menu.mapper.MenuViewerMapper">
+<mapper
+	namespace="com.example.app.viewer.menu.mapper.MenuViewerMapper">
 
 	<!-- 中分類取得 -->
 	<select id="findSubcategoriesByCategoryId"
 		resultType="com.example.app.viewer.menu.dto.MenuViewerSubcategoryDTO">
 		SELECT DISTINCT
 		ms.subcategory_id AS id,
-		ms.subcategory_name AS name
+		ms.subcategory_name
+		AS name
 		FROM menu_subcategories ms
 		WHERE ms.subcategory_id IN (
-		SELECT DISTINCT item_subcategory
+		SELECT
+		DISTINCT item_subcategory
 		FROM menu_items
-		WHERE item_category = #{categoryId}
+		WHERE item_category =
+		#{categoryId}
 		)
 	</select>
 
@@ -28,13 +32,14 @@
 		mi.item_detail AS detail,
 		mi.item_image AS image,
 		mi.price AS price,
-		mi.is_visible AS is_visible,
-		mi.is_orderable AS is_orderable,
-		mi.item_subcategory AS subcategory_id
+		mi.is_visible AS isVisible,
+		mi.is_orderable AS isOrderable,
+		mi.item_subcategory AS subcategoryId
 		FROM menu_items mi
 		WHERE mi.item_category = #{categoryId}
 		AND mi.is_visible = TRUE
 	</select>
+
 
 </mapper>
 

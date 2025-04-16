@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -335,6 +336,7 @@ public class WorkstationController {
 		return "redirect:/admin/" + shopId + "_dashboard/workstation/menu/list";
 	}
 
+	
 	// 商品追加処理
 	@PostMapping("/menu/{categoryId}/{subcategoryId}/add")
 	public String addMenuItem(
@@ -350,7 +352,9 @@ public class WorkstationController {
 			@RequestParam(name = "itemImage", required = false) MultipartFile imageFile,
 			@RequestParam(name = "selectedImageName", required = false) String selectedImageName,
 			Model model) {
+
 		String fileName = null;
+		MenuItem item = new MenuItem(); // ← 共通で使うので try外
 
 		try {
 			// 画像アップロードを優先
@@ -359,41 +363,57 @@ public class WorkstationController {
 				String extension = originalName.substring(originalName.lastIndexOf("."));
 				fileName = UUID.randomUUID() + extension;
 
-				File uploadDir = new File("uploads/menu/" + shopId);
-				if (!uploadDir.exists())
+				String uploadRootPath = System.getProperty("user.dir") + "/uploads/menu/" + shopId;
+				File uploadDir = new File(uploadRootPath);
+				if (!uploadDir.exists()) {
 					uploadDir.mkdirs();
+				}
 
 				File dest = new File(uploadDir, fileName);
 				imageFile.transferTo(dest);
+
+				System.out.println("[DEBUG] original filename = " + originalName);
+				System.out.println("[DEBUG] extension = " + extension);
+				System.out.println("[DEBUG] saved filename = " + fileName);
+				System.out.println("[DEBUG] full save path = " + dest.getAbsolutePath());
 			} else if (selectedImageName != null && !selectedImageName.isEmpty()) {
 				fileName = selectedImageName;
 			}
 
-			// メニューエンティティの作成
-			MenuItem item = new MenuItem();
-			item.setShopId(shopId);
-			item.setItemCategory(categoryId);
-			item.setItemSubcategory(subcategoryId);
-			item.setItemName(itemName);
-			item.setItemDetail(itemDetail);
-			item.setPrice(price);
-			item.setStockQuantity(stockQuantity);
-			item.setItemImage(fileName); // 画像ファイル名のみ（null可）
-			item.setIsVisible(isVisible);
-			item.setIsOrderable(isOrderable);
-
-			menuMapper.insertMenuItem(item); // Mapper直接呼び出し（現構成）
-
-			return "redirect:/admin/" + shopId + "_dashboard/workstation/menu/list";
-
 		} catch (IOException e) {
+			System.out.println("[ERROR] ファイル保存に失敗: " + e.getMessage());
+			e.printStackTrace();
+
+			// エラー時の再表示用データ
 			model.addAttribute("errorMessage", "画像の保存に失敗しました");
 			model.addAttribute("shopId", shopId);
 			model.addAttribute("categoryId", categoryId);
 			model.addAttribute("subcategoryId", subcategoryId);
-			// 再表示に必要なリスト（imageList等）も再セットする
+			model.addAttribute("category", menuMapper.findCategoryById(categoryId));
+			model.addAttribute("subcategory", menuMapper.findSubcategoryById(subcategoryId));
+
+			File folder = new File(System.getProperty("user.dir") + "/uploads/menu/" + shopId);
+			String[] files = folder.list();
+			model.addAttribute("imageList", files != null ? Arrays.asList(files) : new ArrayList<>());
+
 			return "admin/shop_dashboard/workstation/menu/add_item";
 		}
+
+		// データ登録処理
+		item.setShopId(shopId);
+		item.setItemCategory(categoryId);
+		item.setItemSubcategory(subcategoryId);
+		item.setItemName(itemName);
+		item.setItemDetail(itemDetail);
+		item.setPrice(price);
+		item.setStockQuantity(stockQuantity);
+		item.setItemImage(fileName);
+		item.setIsVisible(isVisible);
+		item.setIsOrderable(isOrderable);
+
+		menuMapper.insertMenuItem(item);
+
+		return "redirect:/admin/" + shopId + "_dashboard/workstation/menu/list";
 	}
 
 	// 大分類編集処理
@@ -427,6 +447,31 @@ public class WorkstationController {
 
 		menuMapper.updateSubcategory(subcategory);
 		return "redirect:/admin/" + shopId + "_dashboard/workstation/menu/list";
+	}
+
+	// アップロード済み画像一覧を取得（共通 + 自店）
+	@GetMapping("/menu/image_list")
+	@ResponseBody
+	public List<String> getImageList(@PathVariable("shopId") int shopId) {
+		List<String> filenames = new ArrayList<>();
+
+		File shopDir = new File("uploads/menu/" + shopId);
+		File commonDir = new File("uploads/menu/0");
+
+		if (shopDir.exists() && shopDir.isDirectory()) {
+			for (File f : shopDir.listFiles()) {
+				if (f.isFile())
+					filenames.add(shopId + "/" + f.getName());
+			}
+		}
+		if (commonDir.exists() && commonDir.isDirectory()) {
+			for (File f : commonDir.listFiles()) {
+				if (f.isFile())
+					filenames.add("0/" + f.getName());
+			}
+		}
+
+		return filenames;
 	}
 
 }
