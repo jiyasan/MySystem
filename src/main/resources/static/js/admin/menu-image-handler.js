@@ -64,15 +64,19 @@ document.addEventListener('DOMContentLoaded', () => {
 
 	// ファイル選択時のプレビュー（アップロード）
 	fileInput?.addEventListener('change', function() {
-		if (this.files && this.files[0]) {
+		console.log("🟡 ファイルが選択された:", this.files[0]);
+
+		if (this.files[0]) {
 			const reader = new FileReader();
 			reader.onload = (e) => {
+				console.log("🟢 reader.onload 実行！画像URL:", e.target.result);
 				preview.src = e.target.result;
-				preview.style.display = 'block'; // ← 忘れがち
+				preview.style.display = 'block';
 			};
 			reader.readAsDataURL(this.files[0]);
 		}
 	});
+
 
 	// ラジオで選択した画像のプレビュー（アップロード済）
 	document.querySelectorAll('input[name="selectedImage"]').forEach(input => {

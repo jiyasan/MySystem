@@ -78,14 +78,9 @@
 					<!-- 📑 ファイル一覧から選択 -->
 					<div id="imageSelectArea" class="border p-2"
 						style="display: none; max-height: 200px; overflow-y: auto;">
-						<div th:each="img : ${imageList}" class="d-inline-block m-1">
-							<label class="d-block text-center">
-								<input type="radio" name="selectedImage" th:value="${img}" class="form-check-input" />
-								<img th:src="@{'/uploads/menu/' + ${shopId} + '/' + ${img}}" class="img-thumbnail"
-									style="height: 80px;" />
-							</label>
-						</div>
+						<!-- ← JSがここに描画してくれるので、サーバー側からは何も出さなくてOK -->
 					</div>
+
 
 					<!-- 🔍 プレビュー -->
 					<div class="mt-3">
