@@ -119,6 +119,7 @@ public class GuestEntryController {
 				customerSessionService.registerAdditionalGuest(sessionId, nickname, deviceToken);
 				return "redirect:/menu/" + sessionId;
 			} else {
+				tableMapper.updateTableStatus(shopId, tableId, 1);
 				sessionId = customerSessionService.createSession(tableId, guestCount, nickname, deviceToken, shopId);
 				return "redirect:/menu/" + sessionId;
 			}

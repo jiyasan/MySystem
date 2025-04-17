@@ -22,11 +22,13 @@
 		SELECT
 		table_id AS tableId,
 		shop_id AS shopId,
-		table_name AS tableName,
+		table_name AS
+		tableName,
 		status,
 		is_deleted AS isDeleted
 		FROM tables
-		WHERE shop_id = #{shopId}
+		WHERE shop_id =
+		#{shopId}
 		AND table_name = #{tableName}
 		LIMIT 1
 	</select>
@@ -36,18 +38,21 @@
 		SELECT
 		table_id AS tableId,
 		shop_id AS shopId,
-		table_name AS tableName,
+		table_name AS
+		tableName,
 		status,
 		is_deleted AS isDeleted
 		FROM tables
-		WHERE shop_id = #{shopId}
+		WHERE shop_id =
+		#{shopId}
 		AND is_deleted = false
 	</select>
 
 	<!-- ♻️ 3. テーブル復活 -->
 	<update id="revive" parameterType="map">
 		UPDATE tables
-		SET is_deleted = false
+		SET is_deleted =
+		false
 		WHERE shop_id = #{shopId}
 		AND table_name = #{tableName}
 	</update>
@@ -60,13 +65,15 @@
 
 	<select id="findShopIdByTableId" resultType="int">
 		SELECT shop_id
-		FROM tables
+		FROM
+		tables
 		WHERE table_id = #{tableId}
 	</select>
 
 	<select id="countValidTableById" resultType="int">
 		SELECT COUNT(*)
-		FROM tables
+		FROM
+		tables
 		WHERE table_id = #{tableId}
 		AND status = 0
 		AND is_deleted = false
@@ -78,11 +85,13 @@
 		SELECT
 		table_id AS tableId,
 		shop_id AS shopId,
-		table_name AS tableName,
+		table_name AS
+		tableName,
 		status,
 		is_deleted AS isDeleted
 		FROM tables
-		WHERE table_id = #{tableId}
+		WHERE table_id =
+		#{tableId}
 		AND is_deleted = false
 	</select>
 
@@ -90,17 +99,21 @@
 		resultType="com.example.app.entity.CustomerSession">
 		SELECT
 		customer_sessions_id AS customerSessionsId,
-		table_id AS tableId,
+		table_id
+		AS tableId,
 		guest_count AS guestCount,
 		started_at AS startedAt,
-		ended_at AS endedAt,
+		ended_at
+		AS endedAt,
 		is_paid AS isPaid,
 		total_amount AS totalAmount,
 		note
-		FROM customer_sessions
+		FROM
+		customer_sessions
 		WHERE table_id = #{tableId}
 		AND ended_at IS NULL
-		LIMIT 1
+		LIMIT
+		1
 	</select>
 
 	<select id="findOrderItemsByTableId"
@@ -119,12 +132,23 @@
 		oi.served_by AS servedBy,
 		oi.completed_at AS completedAt,
 		oi.served_at AS servedAt
-		FROM order_items oi
+		FROM
+		order_items oi
 		JOIN orders o ON oi.order_id = o.order_id
-		JOIN customer_sessions cs ON o.session_id = cs.customer_sessions_id
-		WHERE cs.table_id = #{tableId}
+		JOIN
+		customer_sessions cs ON o.session_id = cs.customer_sessions_id
+		WHERE
+		cs.table_id = #{tableId}
 		AND cs.ended_at IS NULL
-		AND oi.is_canceled = false
+		AND oi.is_canceled =
+		false
 		AND oi.status = 2  <!-- 提供済み（status=2）のみ -->
 	</select>
+
+	<update id="updateTableStatus">
+		UPDATE tables
+		SET status = #{status}
+		WHERE shop_id = #{shopId} AND table_id = #{tableId}
+	</update>
+
 </mapper>

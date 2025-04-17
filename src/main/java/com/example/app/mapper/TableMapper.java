@@ -28,4 +28,9 @@ public interface TableMapper {
 	CustomerSession findSessionByTableId(@Param("tableId") int tableId);
 
 	List<OrderItem> findOrderItemsByTableId(@Param("tableId") int tableId);
+
+	void updateTableStatus(@Param("shopId") int shopId,
+			@Param("tableId") int tableId,
+			@Param("status") int status);
+
 }

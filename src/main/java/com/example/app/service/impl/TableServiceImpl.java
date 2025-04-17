@@ -11,10 +11,21 @@ public class TableServiceImpl implements TableService {
 
 	@Autowired
 	private TableMapper tableMapper;
-
+	
 	@Override
 	public boolean isValidTable(int tableId) {
-		// テーブルが存在し、かつ使用可能（is_active = true）であれば true
-		return tableMapper.countValidTableById(tableId) > 0;
+		// 存在確認（例）
+		return tableMapper.findById(tableId) != null;
 	}
+	
+	@Override
+	public void markAsOccupied(int shopId, int tableId) {
+		tableMapper.updateTableStatus(shopId, tableId, 1); // 1 = 着席
+	}
+
+	@Override
+	public void markAsEmpty(int shopId, int tableId) {
+		tableMapper.updateTableStatus(shopId, tableId, 0); // 0 = 空席
+	}
+
 }
